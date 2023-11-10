@@ -91,15 +91,18 @@ export default {
             html = html.replace(reg, data);
           } else {
             // 媒体资源
-            const reg = new RegExp(`src=['"]freelog://${deps[index].articleName}['"]`, "g");
+            let regStr = `src=['"]freelog://${deps[index].articleName}['"]`;
+            // 将资源名称中的括号()添加\
+            regStr = regStr.replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+            const reg = new RegExp(regStr, "g");
             html = html.replace(reg, `src="${dep}"`);
           }
         });
       });
 
       // 隐藏视频与音频的下载按钮
-      html = html.replace(/<video/g, '<video controlslist="nodownload"');
-      html = html.replace(/<audio/g, '<audio controlslist="nodownload"');
+      html = html.replace(/<video/g, '<p><video controlslist="nodownload"');
+      html = html.replace(/<audio/g, '<p><audio controlslist="nodownload"');
 
       data.content = html;
     };
@@ -107,7 +110,6 @@ export default {
     /** md 转 html */
     const md2Html = (markdown: string) => {
       const converter = new showdown.Converter();
-      // 保留空行
       let result = converter.makeHtml(markdown);
 
       // 将删除线 <del> 改为 <s>
