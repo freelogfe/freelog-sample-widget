@@ -101,6 +101,7 @@ export default {
       });
 
       // 隐藏视频与音频的下载按钮
+      html = html.replace(/<img/g, "<p><img");
       html = html.replace(/<video/g, '<p><video controlslist="nodownload"');
       html = html.replace(/<audio/g, '<p><audio controlslist="nodownload"');
 
