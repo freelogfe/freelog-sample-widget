@@ -82,7 +82,7 @@ export default {
           window.open(shareWeb);
         } else if (item.id === "weibo") {
           // 微博
-          window.open(`https://service.weibo.com/share/share.php?url=${url}&title=${data.shareText}&pic=${image}`);
+          window.open(`https://service.weibo.com/share/share.php?title=${data.shareText}&pic=${image}`);
         } else if (item.id === "douban") {
           // 豆瓣
           window.open(`https://www.douban.com/share/service?url=${url}&title=${title}&image=${image}`);
