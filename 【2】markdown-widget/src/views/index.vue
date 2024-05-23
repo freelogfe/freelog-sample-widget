@@ -5,7 +5,7 @@
     v-html="content"
     v-highlight
     oncontextmenu="return false"
-    v-if="exhibitInfo?.versionInfo.exhibitProperty.mime === 'text/markdown'"
+    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime === 'text/markdown'"
   ></div>
 
   <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize }" v-else>{{ content }}</div>
@@ -13,10 +13,8 @@
 
 <script lang="ts">
 import showdown from "showdown";
-import { ExhibitItem } from "@/api/interface";
-import { getExhibitDepFileStream, getSelfConfig } from "@/api/freelog";
-import { reactive, toRefs, watch } from "vue";
-import { useStore } from "@/store";
+import { reactive, toRefs } from "vue";
+import { ExhibitInfo, ExhibitVersionInfo, freelogApp, widgetApi } from "freelog-runtime";
 
 export default {
   name: "markdown-widget",
@@ -32,20 +30,18 @@ export default {
     showdown.setOption("strikethrough", true);
     showdown.setOption("simpleLineBreaks", true);
 
-    const store = useStore();
-
     const data = reactive({
-      exhibitInfo: null as ExhibitItem | null,
+      exhibitInfo: null as ExhibitInfo | null,
       content: "",
       fontSize: 16,
     });
 
     /** 初始化数据 */
     const initData = async () => {
-      const widgetConfig = await getSelfConfig();
+      const widgetConfig = widgetApi.getData();
       data.exhibitInfo = widgetConfig.exhibitInfo;
       data.content = widgetConfig.content;
-      data.fontSize = widgetConfig.fontSize || store.fontSize;
+      data.fontSize = widgetConfig.fontSize;
       getContent();
     };
 
@@ -55,8 +51,8 @@ export default {
 
       if (!data.content || !data.exhibitInfo) return;
 
-      const { exhibitProperty, dependencyTree } = data.exhibitInfo.versionInfo;
-      if (exhibitProperty.mime === "text/markdown") {
+      const { exhibitProperty, dependencyTree } = data.exhibitInfo.versionInfo as ExhibitVersionInfo;
+      if (exhibitProperty?.mime === "text/markdown") {
         // markdown 文件，以 markdown 解析
         html = md2Html(data.content);
       } else {
@@ -65,17 +61,16 @@ export default {
 
       const deps = dependencyTree.filter((_: any, index: number) => index !== 0);
       let promiseArr = [] as Promise<any>[];
-      deps.forEach((dep: { resourceType: string; parentNid: any; articleId: any }) => {
+      deps.forEach((dep) => {
         if (!data.exhibitInfo) return;
 
         const isMediaResource =
           dep.resourceType.includes("图片") || dep.resourceType.includes("视频") || dep.resourceType.includes("音频");
-        const depContent: Promise<any> = getExhibitDepFileStream(
-          data.exhibitInfo.exhibitId,
-          dep.parentNid,
-          dep.articleId,
-          isMediaResource
-        );
+        const depContent = freelogApp.getExhibitDepFileStream(data.exhibitInfo.exhibitId, {
+          parentNid: dep.parentNid,
+          subArticleId: dep.articleId,
+          returnUrl: isMediaResource,
+        });
         promiseArr.push(depContent);
       });
 
@@ -127,17 +122,9 @@ export default {
       return result;
     };
 
-    watch(
-      () => store.fontSize,
-      (cur) => {
-        data.fontSize = cur;
-      }
-    );
-
     initData();
 
     return {
-      store,
       ...toRefs(data),
     };
   },
