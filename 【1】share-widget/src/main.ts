@@ -1,52 +1,37 @@
 import "./public-path";
-import { createApp } from "vue";
-import { createRouter, createMemoryHistory } from "vue-router";
-import App from "./App.vue";
+import { App, createApp } from "vue";
+import * as VueRouter from "vue-router";
+import AppPage from "./App.vue";
 import routes from "./router";
-import { createPinia } from "pinia";
-import { useStore } from "./store";
+import { initFreelogApp } from "freelog-runtime";
 
 const myWindow: any = window;
-myWindow.FREELOG_RESOURCENAME = "ZhuC/share-widget";
+let app: App<Element> | null = null;
+let router: VueRouter.Router | null = null;
+let history: VueRouter.RouterHistory | null = null;
 
-let instance: any = null;
-let router = null;
-
-function render(props: any = {}) {
-  const { container } = props;
-  router = createRouter({
-    history: createMemoryHistory(process.env.BASE_URL),
+myWindow.mount = () => {
+  history = VueRouter.createWebHistory();
+  router = VueRouter.createRouter({
+    history,
     routes,
   });
-  instance = createApp(App).use(router).use(createPinia());
-  instance.mount(container ? container.querySelector("#share-widget-app") : "#share-widget-app");
-}
 
-if (!myWindow.__POWERED_BY_FREELOG__) {
-  render();
-}
+  initFreelogApp();
 
-export async function bootstrap() {
-  console.log("widget bootstraped");
-}
+  app = createApp(AppPage);
+  app.use(router);
+  app.mount("#share-widget-app");
+};
 
-export async function mount(props: any) {
-  props.registerApi({
-    setData: (key: string, value: any) => {
-      const store = useStore();
-      store.setData(key, value);
-    },
-  });
-  render(props);
-  if (instance.config) {
-    instance.config.globalProperties.$onGlobalStateChange = props.onGlobalStateChange;
-    instance.config.globalProperties.$setGlobalState = props.setGlobalState;
-  }
-}
-
-export async function unmount() {
-  instance.unmount();
-  instance._container.innerHTML = "";
-  instance = null;
+myWindow.unmount = () => {
+  app?.unmount();
+  history?.destroy();
+  app = null;
   router = null;
+  history = null;
+};
+
+if (!myWindow.__MICRO_APP_ENVIRONMENT__) {
+  myWindow.mount();
 }

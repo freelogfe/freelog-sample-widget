@@ -42,26 +42,20 @@
 
 <script lang="ts">
 import { reactive, toRefs } from "@vue/reactivity";
-import { ExhibitItem } from "@/api/interface";
 import { shareBtns } from "@/api/data";
 import { showToast } from "@/utils/common";
 import QrcodeVue from "qrcode.vue";
-import { useStore } from "@/store";
-import { storeToRefs } from "pinia";
-import { getCurrentUrl, getSelfConfig, pushMessage4Task } from "@/api/freelog";
+import { ExhibitInfo, freelogApp, widgetApi } from "freelog-runtime";
 
 export default {
   name: "share",
 
-  components: {
-    QrcodeVue,
-  },
+  components: { QrcodeVue },
 
   setup() {
-    const store = useStore();
-
     const data = reactive({
-      exhibit: {} as ExhibitItem,
+      show: false,
+      exhibit: {} as ExhibitInfo,
       shareText: "",
       href: "",
       qrcodeShow: false,
@@ -72,9 +66,9 @@ export default {
       /** 分享 */
       share(item: { id: string; name: string }) {
         const url = data.href;
-        const title = data.exhibit?.exhibitTitle;
+        const title = data.exhibit.exhibitTitle;
         const summary = ``;
-        const image = data.exhibit?.coverImages[0];
+        const image = data.exhibit.coverImages[0];
 
         if (item.id === "qqZone") {
           // QQ空间
@@ -97,26 +91,27 @@ export default {
           document.execCommand("Copy");
           showToast("链接复制成功～");
         }
-        pushMessage4Task({ taskConfigCode: "TS000077", meta: { presentableId: data.exhibit.exhibitId } });
-        pushMessage4Task({ taskConfigCode: "TS000804", meta: { presentableId: data.exhibit.exhibitId } });
+        // pushMessage4Task({ taskConfigCode: "TS000077", meta: { presentableId: data.exhibit.exhibitId } });
+        // pushMessage4Task({ taskConfigCode: "TS000804", meta: { presentableId: data.exhibit.exhibitId } });
       },
     };
 
     /** 初始化数据 */
     const initData = async () => {
-      const widgetConfig = await getSelfConfig();
-      const url = getCurrentUrl();
+      widgetApi.addDataListener((props: any) => {
+        data.show = props.show;
+      });
+      const widgetConfig = widgetApi.getData();
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
-      data.href = url;
-      data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit?.exhibitTitle}》\n${url}`;
+      data.href = freelogApp.getShareUrl(widgetConfig.exhibit.exhibitId, widgetConfig.routerType);
+      data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit.exhibitTitle}》\n${data.href}`;
     };
 
     initData();
 
     return {
       shareBtns,
-      ...storeToRefs(store),
       ...toRefs(data),
       ...methods,
     };
