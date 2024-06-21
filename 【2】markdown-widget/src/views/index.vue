@@ -122,6 +122,13 @@ export default {
       return result;
     };
 
+    // 监听父->子的数据
+    widgetApi.addDataListener((props: any) => {
+      if (props.fontSize) {
+        data.fontSize = props.fontSize;
+      }
+    });
+
     initData();
 
     return {
