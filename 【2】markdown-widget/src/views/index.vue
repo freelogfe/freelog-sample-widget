@@ -1,7 +1,7 @@
 <template>
   <div
     class="markdown-wrapper"
-    :style="{ '--fontSize': fontSize }"
+    :style="{ '--fontSize': fontSize,backgroundColor: themeColor }"
     v-html="content"
     v-highlight
     oncontextmenu="return false"
