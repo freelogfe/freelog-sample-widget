@@ -1,20 +1,21 @@
 <template>
   <div
     class="markdown-wrapper"
-    :style="{ '--fontSize': fontSize }"
+    :style="{ '--fontSize': fontSize,backgroundColor: themeColor }"
     v-html="content"
     v-highlight
     oncontextmenu="return false"
     v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime === 'text/markdown'"
   ></div>
 
-  <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize }" v-else>{{ content }}</div>
+  <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize, backgroundColor: themeColor }" v-else>{{ content }}</div>
 </template>
 
 <script lang="ts">
 import showdown from "showdown";
 import { reactive, toRefs } from "vue";
 import { ExhibitInfo, ExhibitVersionInfo, freelogApp, widgetApi } from "freelog-runtime";
+import { readerThemeList } from "@/common/constants";
 
 export default {
   name: "markdown-widget",
@@ -34,6 +35,7 @@ export default {
       exhibitInfo: null as ExhibitInfo | null,
       content: "",
       fontSize: 16,
+      themeColor: JSON.parse(localStorage.getItem("theme") || "null")?.bookColor || readerThemeList[0].bookColor
     });
 
     /** 初始化数据 */
@@ -121,6 +123,17 @@ export default {
 
       return result;
     };
+
+    // 监听父->子的数据
+    widgetApi.addDataListener((props: any) => {
+      if (props.fontSize) {
+        data.fontSize = props.fontSize;
+      }
+
+      if (props.themeColor) {
+        data.themeColor = props.themeColor.bookColor;
+      }
+    });
 
     initData();
 
