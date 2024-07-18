@@ -142,6 +142,11 @@ export default {
       if (props.themeColor) {
         data.themeColor = props.themeColor.bookColor;
       }
+
+      if (props.content) {
+        data.content = props.content;
+        getContent();
+      }
     });
 
     initData();
