@@ -22,15 +22,26 @@
             </div>
           </div>
 
-          <div class="copy-btn" @click="share({ id: 'copy', name: '' })">复制链接</div>
+          <div class="copy-btn" @click="share({ id: 'copy', name: '' })">
+            复制链接
+          </div>
 
           <transition name="fade-in-out">
-            <div class="qrcode-popup-wrapper" @click="qrcodeShow = false" v-if="qrcodeShow">
+            <div
+              class="qrcode-popup-wrapper"
+              @click="qrcodeShow = false"
+              v-if="qrcodeShow"
+            >
               <div class="qrcode-popup" @click.stop>
-                <i class="close-btn freelog fl-icon-guanbi" @click="qrcodeShow = false"></i>
+                <i
+                  class="close-btn freelog fl-icon-guanbi"
+                  @click="qrcodeShow = false"
+                ></i>
                 <div class="qrcode-text">分享到{{ qrcodeInfo.name }}</div>
                 <qrcode-vue :value="qrcodeInfo.url" :size="220" level="M" />
-                <div class="qrcode-text">使用{{ qrcodeInfo.name }}扫一扫完成分享</div>
+                <div class="qrcode-text">
+                  使用{{ qrcodeInfo.name }}扫一扫完成分享
+                </div>
               </div>
             </div>
           </transition>
@@ -76,10 +87,14 @@ export default {
           window.open(shareWeb);
         } else if (item.id === "weibo") {
           // 微博
-          window.open(`https://service.weibo.com/share/share.php?title=${data.shareText}&pic=${image}`);
+          window.open(
+            `https://service.weibo.com/share/share.php?title=${data.shareText}&pic=${image}`
+          );
         } else if (item.id === "douban") {
           // 豆瓣
-          window.open(`https://www.douban.com/share/service?url=${url}&title=${title}&image=${image}`);
+          window.open(
+            `https://www.douban.com/share/service?url=${url}&title=${title}&image=${image}`
+          );
         } else if (["qq", "wechat"].includes(item.id)) {
           // qq、微信
           data.qrcodeInfo = { name: item.name, url };
@@ -98,13 +113,44 @@ export default {
 
     /** 初始化数据 */
     const initData = async () => {
+      let params = {};
       widgetApi.addDataListener((props: any) => {
         data.show = props.show;
       });
       const widgetConfig = widgetApi.getData();
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
-      data.href = freelogApp.getShareUrl(widgetConfig.exhibit.exhibitId, widgetConfig.routerType);
+      const { exhibitId, itemId, collection } = widgetConfig.exhibit;
+      
+      if (type === "漫画") {
+        if (itemId) {
+          params = { exhibitId, itemId, query: { collection } };
+        } else {
+          params = { exhibitId };
+        }
+
+        data.href = (freelogApp as any).getShareUrl(
+            params,
+            widgetConfig.routerType
+          );
+      } else if (type === "小说") {
+        if (itemId) {
+          params = { exhibitId, itemId, query: { collection } };
+        } else {
+          params = { exhibitId };
+        }
+
+        data.href = (freelogApp as any).getShareUrl(
+          params,
+          widgetConfig.routerType
+        );
+      } else {
+        data.href = freelogApp.getShareUrl(
+          widgetConfig.exhibit.exhibitId,
+          widgetConfig.routerType
+        );
+      }
+
       data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit.exhibitTitle}》\n${data.href}`;
     };
 
