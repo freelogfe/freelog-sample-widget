@@ -31,11 +31,20 @@ export default {
     showdown.setOption("strikethrough", true);
     showdown.setOption("simpleLineBreaks", true);
 
+    const safeParseJSON=(value:string)=> {
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return null;
+        }
+    };
+    
+    const theme = safeParseJSON(localStorage.getItem("theme") as string);
     const data = reactive({
       exhibitInfo: null as ExhibitInfo | null,
       content: "",
       fontSize: 16,
-      themeColor: JSON.parse(localStorage.getItem("theme") || "null")?.bookColor || readerThemeList[0].bookColor
+      themeColor: theme?.bookColor || readerThemeList[0].bookColor
     });
 
     /** 初始化数据 */
@@ -132,6 +141,11 @@ export default {
 
       if (props.themeColor) {
         data.themeColor = props.themeColor.bookColor;
+      }
+
+      if (props.content) {
+        data.content = props.content;
+        getContent();
       }
     });
 
