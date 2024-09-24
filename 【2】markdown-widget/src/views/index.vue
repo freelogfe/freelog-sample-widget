@@ -63,6 +63,7 @@ export default {
       if (!data.content || !data.exhibitInfo) return;
 
       const { exhibitProperty, dependencyTree } = data.exhibitInfo.versionInfo as ExhibitVersionInfo;
+      
       if (exhibitProperty?.mime === "text/markdown") {
         // markdown 文件，以 markdown 解析
         html = md2Html(data.content);
@@ -72,19 +73,20 @@ export default {
 
       const deps = dependencyTree.filter((_: any, index: number) => index !== 0);
       let promiseArr = [] as Promise<any>[];
+      
       deps.forEach((dep) => {
         if (!data.exhibitInfo) return;
 
         const isMediaResource =
           dep.resourceType.includes("图片") || dep.resourceType.includes("视频") || dep.resourceType.includes("音频");
         const depContent = freelogApp.getExhibitDepFileStream(data.exhibitInfo.exhibitId, {
-          parentNid: dep.parentNid,
-          subArticleId: dep.articleId,
+          nid: dep.nid,
           returnUrl: isMediaResource,
         });
+        
         promiseArr.push(depContent);
       });
-
+      
       await Promise.all(promiseArr).then((res) => {
         res.forEach((dep, index) => {
           if (dep.data) {
