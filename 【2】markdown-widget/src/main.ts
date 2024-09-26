@@ -13,6 +13,8 @@ let router: VueRouter.Router | null = null;
 let history: VueRouter.RouterHistory | null = null;
 
 myWindow.mount = () => {
+  console.log("更新标记了哈哈, 2024年9月26日14:25:26");
+
   history = VueRouter.createWebHistory();
   router = VueRouter.createRouter({
     history,

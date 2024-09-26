@@ -6,6 +6,10 @@ const routes: Array<RouteRecordRaw> = [
     name: "index",
     component: () => import("../views/index.vue"),
   },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import("../views/index.vue"),
+  },
 ];
 
 export default routes;
