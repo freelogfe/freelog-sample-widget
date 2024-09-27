@@ -38,7 +38,8 @@ export default {
             return null;
         }
     };
-    
+
+    const widgetConfig = widgetApi.getData();
     const theme = safeParseJSON(localStorage.getItem("theme") as string);
     const data = reactive({
       exhibitInfo: null as ExhibitInfo | null,
@@ -49,9 +50,7 @@ export default {
 
     /** 初始化数据 */
     const initData = async () => {
-      const widgetConfig = widgetApi.getData();
       data.exhibitInfo = widgetConfig.exhibitInfo;
-      data.content = widgetConfig.content;
       data.fontSize = widgetConfig.fontSize;
       getContent();
     };
@@ -60,26 +59,24 @@ export default {
     const getContent = async () => {
       let html = "";
 
-      if (!data.content || !data.exhibitInfo) return;
+      if (!widgetConfig.content || !widgetConfig.exhibitInfo) return;
 
-      const { exhibitProperty, dependencyTree } = data.exhibitInfo.versionInfo as ExhibitVersionInfo;
+      const { exhibitProperty, dependencyTree } = widgetConfig.exhibitInfo.versionInfo as ExhibitVersionInfo;
       
       if (exhibitProperty?.mime === "text/markdown") {
         // markdown 文件，以 markdown 解析
-        html = md2Html(data.content);
+        html = md2Html(widgetConfig.content);
       } else {
-        html = data.content;
+        html = widgetConfig.content;
       }
 
       const deps = dependencyTree.filter((_: any, index: number) => index !== 0);
       let promiseArr = [] as Promise<any>[];
       
       deps.forEach((dep) => {
-        if (!data.exhibitInfo) return;
-
         const isMediaResource =
           dep.resourceType.includes("图片") || dep.resourceType.includes("视频") || dep.resourceType.includes("音频");
-        const depContent = freelogApp.getExhibitDepFileStream(data.exhibitInfo.exhibitId, {
+        const depContent = freelogApp.getExhibitDepFileStream(widgetConfig.exhibitInfo.exhibitId, {
           nid: dep.nid,
           returnUrl: isMediaResource,
         });
@@ -146,7 +143,6 @@ export default {
       }
 
       if (props.content) {
-        data.content = props.content;
         getContent();
       }
     });
