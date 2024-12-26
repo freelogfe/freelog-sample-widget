@@ -39,7 +39,7 @@ export default {
         }
     };
 
-    const widgetConfig = widgetApi.getData();
+    let widgetConfig = widgetApi.getData();
     const theme = safeParseJSON(localStorage.getItem("theme") as string);
     const data = reactive({
       exhibitInfo: null as ExhibitInfo | null,
@@ -76,7 +76,7 @@ export default {
       deps.forEach((dep) => {
         const isMediaResource =
           dep.resourceType.includes("图片") || dep.resourceType.includes("视频") || dep.resourceType.includes("音频");
-        const depContent = freelogApp.getExhibitDepFileStream(widgetConfig.exhibitInfo.exhibitId, {
+        const depContent = (freelogApp as any).getExhibitDepFileStream(widgetConfig.exhibitInfo.exhibitId, {
           nid: dep.nid,
           returnUrl: isMediaResource,
         });
@@ -143,6 +143,7 @@ export default {
       }
 
       if (props.content) {
+        widgetConfig = widgetApi.getData();
         getContent();
       }
     });
