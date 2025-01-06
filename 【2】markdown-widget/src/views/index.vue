@@ -5,7 +5,7 @@
     v-html="content"
     v-highlight
     oncontextmenu="return false"
-    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime === 'text/markdown'"
+    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime.includes('text/markdown')"
   ></div>
 
   <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize, backgroundColor: themeColor }" v-else>{{ content }}</div>
@@ -63,7 +63,7 @@ export default {
 
       const { exhibitProperty, dependencyTree } = widgetConfig.exhibitInfo.versionInfo as ExhibitVersionInfo;
       
-      if (exhibitProperty?.mime === "text/markdown") {
+      if (typeof exhibitProperty?.mime === "string" && exhibitProperty?.mime?.includes("text/markdown")) {
         // markdown 文件，以 markdown 解析
         html = md2Html(widgetConfig.content);
       } else {
