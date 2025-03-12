@@ -5,7 +5,7 @@
     v-html="content"
     v-highlight
     oncontextmenu="return false"
-    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime.includes('text/markdown')"
+    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime?.includes('text/markdown')"
   ></div>
 
   <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize, backgroundColor: themeColor }" v-else>{{ content }}</div>
