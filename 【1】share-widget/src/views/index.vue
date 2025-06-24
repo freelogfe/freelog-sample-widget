@@ -144,6 +144,17 @@ export default {
           params,
           widgetConfig.routerType
         );
+      } else if (type === "博客") {
+        if (itemId) {
+          params = { exhibitId, itemId };
+        } else {
+          params = { exhibitId };
+        }
+
+        data.href = (freelogApp as any).getShareUrl(
+          params,
+          widgetConfig.routerType
+        );
       } else {
         data.href = freelogApp.getShareUrl(
           widgetConfig.exhibit.exhibitId,
