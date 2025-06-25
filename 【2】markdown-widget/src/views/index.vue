@@ -5,7 +5,10 @@
     v-html="content"
     v-highlight
     oncontextmenu="return false"
-    v-if="exhibitInfo?.versionInfo?.exhibitProperty?.mime === 'text/markdown'"
+    v-if="
+      exhibitInfo?.articleInfo?.articleType === 2
+        ? exhibitInfo?.collectionInfo?.articleInfo?.articleProperty?.mime?.includes('text/markdown' )
+        : exhibitInfo?.versionInfo?.exhibitProperty?.mime?.includes( 'text/markdown')"
   ></div>
 
   <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize, backgroundColor: themeColor }" v-else>{{ content }}</div>
@@ -38,7 +41,8 @@ export default {
             return null;
         }
     };
-    
+
+    let widgetConfig = widgetApi.getData();
     const theme = safeParseJSON(localStorage.getItem("theme") as string);
     const data = reactive({
       exhibitInfo: null as ExhibitInfo | null,
@@ -49,9 +53,7 @@ export default {
 
     /** 初始化数据 */
     const initData = async () => {
-      const widgetConfig = widgetApi.getData();
       data.exhibitInfo = widgetConfig.exhibitInfo;
-      data.content = widgetConfig.content;
       data.fontSize = widgetConfig.fontSize;
       getContent();
     };
@@ -60,31 +62,31 @@ export default {
     const getContent = async () => {
       let html = "";
 
-      if (!data.content || !data.exhibitInfo) return;
+      if (!widgetConfig.content || !widgetConfig.exhibitInfo) return;
 
-      const { exhibitProperty, dependencyTree } = data.exhibitInfo.versionInfo as ExhibitVersionInfo;
-      if (exhibitProperty?.mime === "text/markdown") {
+      const { exhibitProperty, dependencyTree } = widgetConfig.exhibitInfo.versionInfo as ExhibitVersionInfo;
+      
+      if ((typeof exhibitProperty?.mime === "string" && exhibitProperty?.mime?.includes("text/markdown")) || (widgetConfig?.exhibitInfo?.collectionInfo?.articleInfo?.articleProperty?.mime?.includes('text/markdown' ))) {
         // markdown 文件，以 markdown 解析
-        html = md2Html(data.content);
+        html = md2Html(widgetConfig.content);
       } else {
-        html = data.content;
+        html = widgetConfig.content;
       }
 
       const deps = dependencyTree.filter((_: any, index: number) => index !== 0);
       let promiseArr = [] as Promise<any>[];
+      
       deps.forEach((dep) => {
-        if (!data.exhibitInfo) return;
-
         const isMediaResource =
           dep.resourceType.includes("图片") || dep.resourceType.includes("视频") || dep.resourceType.includes("音频");
-        const depContent = freelogApp.getExhibitDepFileStream(data.exhibitInfo.exhibitId, {
-          parentNid: dep.parentNid,
-          subArticleId: dep.articleId,
+        const depContent = (freelogApp as any).getExhibitDepFileStream(widgetConfig.exhibitInfo.exhibitId, {
+          nid: dep.nid,
           returnUrl: isMediaResource,
         });
+        
         promiseArr.push(depContent);
       });
-
+      
       await Promise.all(promiseArr).then((res) => {
         res.forEach((dep, index) => {
           if (dep.data) {
@@ -144,7 +146,7 @@ export default {
       }
 
       if (props.content) {
-        data.content = props.content;
+        widgetConfig = widgetApi.getData();
         getContent();
       }
     });
