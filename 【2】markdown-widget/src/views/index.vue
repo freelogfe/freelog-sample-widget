@@ -5,10 +5,7 @@
     v-html="content"
     v-highlight
     oncontextmenu="return false"
-    v-if="
-      exhibitInfo?.articleInfo?.articleType === 2
-        ? exhibitInfo?.collectionInfo?.articleInfo?.articleProperty?.mime?.includes('text/markdown' )
-        : exhibitInfo?.versionInfo?.exhibitProperty?.mime?.includes( 'text/markdown')"
+    v-if="isMarkdown"
   ></div>
 
   <div id="content" class="txt-wrapper" :style="{ '--fontSize': fontSize, backgroundColor: themeColor }" v-else>{{ content }}</div>
@@ -16,7 +13,7 @@
 
 <script lang="ts">
 import showdown from "showdown";
-import { reactive, toRefs } from "vue";
+import { computed, reactive, toRefs } from "vue";
 import { ExhibitInfo, ExhibitVersionInfo, freelogApp, widgetApi } from "freelog-runtime";
 import { readerThemeList } from "@/common/constants";
 
@@ -64,9 +61,9 @@ export default {
 
       if (!widgetConfig.content || !widgetConfig.exhibitInfo) return;
 
-      const { exhibitProperty, dependencyTree } = widgetConfig.exhibitInfo.versionInfo as ExhibitVersionInfo;
+      const { dependencyTree } = widgetConfig.exhibitInfo.versionInfo as ExhibitVersionInfo;
       
-      if ((typeof exhibitProperty?.mime === "string" && exhibitProperty?.mime?.includes("text/markdown")) || (widgetConfig?.exhibitInfo?.collectionInfo?.articleInfo?.articleProperty?.mime?.includes('text/markdown' ))) {
+      if (isMarkdown.value) {
         // markdown 文件，以 markdown 解析
         html = md2Html(widgetConfig.content);
       } else {
@@ -151,10 +148,30 @@ export default {
       }
     });
 
+    // 判断是否是markdown文件
+    const isMarkdown = computed(() => {
+      const exhibitInfo = widgetConfig.exhibitInfo;
+
+      if(exhibitInfo?.articleInfo?.articleProperty){
+        const mime = exhibitInfo?.articleInfo?.articleProperty?.mime;
+        return typeof mime === 'string' && mime.includes('text/markdown');
+      }
+
+      if ((exhibitInfo as any)?.collectionInfo?.articleInfo?.articleType === 2) {
+        const mime = (exhibitInfo as any)?.collectionInfo?.articleInfo?.articleProperty?.mime;
+        return typeof mime === 'string' && mime.includes('text/markdown');
+      } else {
+        const mime = exhibitInfo?.versionInfo?.exhibitProperty?.mime;
+        return typeof mime === 'string' && mime.includes('text/markdown');
+      }
+
+    })
+
     initData();
 
     return {
       ...toRefs(data),
+      isMarkdown,
     };
   },
 };
