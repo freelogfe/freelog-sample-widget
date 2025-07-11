@@ -157,7 +157,7 @@ export default {
         return typeof mime === 'string' && mime.includes('text/markdown');
       }
 
-      if ((exhibitInfo as any)?.articleInfo?.articleType === 2) {
+      if ([2, 3].includes((exhibitInfo as any)?.articleInfo?.articleType)) {
         const mime = (exhibitInfo as any)?.collectionInfo?.articleInfo?.articleProperty?.mime;
         return typeof mime === 'string' && mime.includes('text/markdown');
       } else {
