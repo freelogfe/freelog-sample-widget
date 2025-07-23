@@ -97,6 +97,9 @@ export default {
           );
         } else if (["qq", "wechat"].includes(item.id)) {
           // qq、微信
+          const url = (freelogApp as any).getWechatShareURL();
+          console.log("qq wechat 分享", url);
+
           data.qrcodeInfo = { name: item.name, url };
           data.qrcodeShow = true;
         } else if (item.id === "copy") {
