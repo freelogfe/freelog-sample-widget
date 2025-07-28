@@ -79,7 +79,7 @@ export default {
         const url = data.href;
         const title = data.exhibit.exhibitTitle;
         const summary = ``;
-        const image = data.exhibit.coverImages[0];
+        const image = data.exhibit?.coverImages?.[0];
 
         if (item.id === "qqZone") {
           // QQ空间
