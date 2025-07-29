@@ -96,12 +96,30 @@ export default {
             `https://www.douban.com/share/service?url=${url}&title=${title}&image=${image}`
           );
         } else if (["qq", "wechat"].includes(item.id)) {
-          // qq、微信
-          const url = (freelogApp as any).getWechatShareURL();
-          console.log("qq wechat 分享", url);
+          // 一些主题不支持常规分享，所以需要获取widgetConfig来重新配置分享链接
+          const widgetConfig = widgetApi.getData();
+          const shareUrlGenerationException = widgetConfig?.shareUrlGenerationException;
 
-          data.qrcodeInfo = { name: item.name, url };
-          data.qrcodeShow = true;
+          if (shareUrlGenerationException) {
+            let url = (freelogApp as any).getWechatShareURL();
+
+            if(shareUrlGenerationException==='图库主题'){
+              const changeUrl = url.replace('home', 'detail');
+              url = changeUrl
+       
+            }
+
+            data.qrcodeInfo = { name: item.name, url };
+            data.qrcodeShow = true;
+    
+          } else {
+            const url = (freelogApp as any).getWechatShareURL();
+            console.log("qq wechat 分享", url);
+
+            data.qrcodeInfo = { name: item.name, url };
+            data.qrcodeShow = true;
+          }
+   
         } else if (item.id === "copy") {
           // 复制链接
           const input: any = document.getElementById("href");
@@ -133,9 +151,9 @@ export default {
         }
 
         data.href = (freelogApp as any).getShareUrl(
-            params,
-            widgetConfig.routerType
-          );
+          params,
+          widgetConfig.routerType
+        );
       } else if (type === "小说") {
         if (itemId) {
           params = { exhibitId, itemId, query: { collection } };
