@@ -39,7 +39,7 @@ onMounted(() => {
 
 </template>
 
-<style scoped>
+<style>
 .share-trigger {
   position: fixed;
   right: 24px;
@@ -63,5 +63,22 @@ onMounted(() => {
 .share-trigger-icon {
   width: 20px;
   height: 20px;
+}
+
+.toast-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  color: #fff;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+  padding: 19px 50px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 22px;
+  animation: fade-in-out 2s linear;
+  white-space: nowrap;
+  z-index: 9999;
 }
 </style>

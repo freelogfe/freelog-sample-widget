@@ -1,6 +1,6 @@
 <template>
   <!-- PC 端 -->
-  <input id="share-href-pc" type="text" class="share-hidden-input" :value="data.href || href" readonly tabindex="-1" />
+  <input id="share-href-pc" type="text" class="share-hidden-input" :value="data.nodeInfo.nodeUrl" readonly tabindex="-1" />
   <Transition name="share-fade">
     <div
       v-show="data.show && !isMobile"
@@ -14,32 +14,32 @@
           </button>
           <div class="share-title">分享</div>
           <div class="share-pc-body">
-            <!-- 左侧：模块1 内容卡片 + 模块2 下载按钮 -->
             <div class="share-pc-left">
-              <!-- 模块1：二维码名片内容卡 -->
               <div class="share-pc-card">
-                <div class="share-pc-brand"></div>
-                <h3 class="share-pc-card-title">{{ title || '我的漫画节点' }}</h3>
-                <p class="share-pc-desc">{{ description || '每周带你探索未知边界发现生活的新可能' }}</p>
+                <div class="share-pc-node-logo">
+                  <img :src="data.nodeInfo.nodeLogo" alt="节点logo" />
+                </div>
+                  <h3 class="share-pc-card-title" v-if="data.nodeInfo.nodeTitle">{{ data.nodeInfo.nodeTitle}}</h3>
+                <p class="share-pc-desc" v-if="data.nodeInfo.nodeShortDescription">{{ data.nodeInfo.nodeShortDescription }}</p>
                 <div class="share-pc-qr-wrap">
-                  <QrcodeVue :value="data.href || href || 'https://freelog.com'" :size="144" level="Q" :margin="1" class="qr-code" />
+                  <QrcodeVue :value="data.nodeInfo.nodeUrl" :size="144" level="Q" :margin="1" class="qr-code" />
                 </div>
                 <div class="share-pc-author">
-                  <span class="share-pc-avatar">{{ (authorName || '张三李四').charAt(0) }}</span>
-                  <span class="share-pc-name">{{ authorName || '张三李四' }}</span>
+                  <span class="share-pc-avatar">
+                    <img :src="data.nodeInfo.avatarUrl" alt="用户头像" />
+                  </span>
+                  <span class="share-pc-name">{{ data.nodeInfo.ownerUserName  }}</span>
                   <span class="share-pc-divider"></span>
                   <div class="share-pc-freelog-wrap">
                     <img src="../assets/freelog.png" alt="freelog" class="share-pc-freelog-icon" />
                   </div>
                 </div>
               </div>
-              <!-- 模块2：下载按钮 -->
               <button type="button" class="share-pc-download" @click="handleDownloadCard">
                 <img src="../assets/share-icons/download.svg" alt="download" class="share-pc-download-icon" />
                 下载二维码名片
               </button>
             </div>
-            <!-- 右侧：分享选项 3×2 网格 -->
             <div class="share-pc-right">
               <button
                 v-for="item in shareBtns"
@@ -106,15 +106,36 @@
       </div>
     </div>
   </Transition>
+
+  <!-- 微信/QQ 二维码分享弹窗 -->
+  <Transition name="qrcode-fade">
+    <div
+      v-if="qrcodeVisible"
+      class="qrcode-popup-wrapper"
+      @click="qrcodeVisible = false"
+    >
+      <div class="qrcode-popup" @click.stop>
+        <button type="button" class="qrcode-close-btn" aria-label="关闭" @click="qrcodeVisible = false">
+          <img src="../assets/share-close.svg" alt="close" class="qrcode-close-icon" />
+        </button>
+        <div class="qrcode-text">分享到{{ qrcodeInfo.alias }}</div>
+        <QrcodeVue :value="qrcodeInfo.url" :size="220" level="M" />
+        <div class="qrcode-text">
+          使用{{ qrcodeInfo.alias }}扫一扫完成分享
+        </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
 import { ref, onUnmounted, reactive, onBeforeMount } from 'vue'
-import {  freelogApp, widgetApi } from "freelog-runtime";
+import {   widgetApi } from "freelog-runtime";
 import QrcodeVue from 'qrcode.vue'
 import { shareBtns, shareBtnsMobile } from '../api/shareData'
 import type { ShareBtnItem } from '../api/shareData'
 import { MOBILE_BREAKPOINT } from '../constants/breakpoint'
+import { showToast } from '../utils/common';
 
 const props = withDefaults(
   defineProps<{
@@ -138,8 +159,7 @@ const data = reactive({
       exhibit: {} as any,
       shareText: "",
       href: "",
-      qrcodeShow: false,
-      qrcodeInfo: { name: "", url: "" },
+      nodeInfo: {} as any,
     });
 
 
@@ -150,7 +170,7 @@ function checkMobile() {
 }
 
 const qrcodeVisible = ref(false)
-const qrcodeInfo = ref({ name: '', url: '' })
+const qrcodeInfo = ref()
 
 
 
@@ -163,10 +183,10 @@ function handleSharePc(item: ShareBtnItem) {
 }
 
 function handleShare(item: ShareBtnItem) {
-  const url = data.href || props.href
-  const title = props.title || ''
+  const url = data.nodeInfo.nodeUrl
+  const title = data.nodeInfo.nodeTitle   || ''
   const text = data.shareText || ''
-  const image = ''
+  const image = data.nodeInfo?.nodeLogo;
 
   if (item.id === 'qqZone') {
     const shareWeb = `https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${encodeURIComponent(url)}&desc=${encodeURIComponent(text)}&summary=&title=${encodeURIComponent(title)}&pics=${encodeURIComponent(image)}`
@@ -180,7 +200,7 @@ function handleShare(item: ShareBtnItem) {
       `https://www.douban.com/share/service?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&image=${encodeURIComponent(image)}`
     )
   } else if (['qq', 'wechat'].includes(item.id)) {
-    qrcodeInfo.value = { name: item.name, url }
+    qrcodeInfo.value = { name: item.name, alias: item.alias, url }
     qrcodeVisible.value = true
   }
 }
@@ -207,22 +227,11 @@ function handleCopy() {
   if (input) {
     input.select()
     document.execCommand('copy')
-    showToast('链接已复制')
+    showToast('链接复制成功～')
   }
 }
 
 
-function showToast(msg: string) {
-  const el = document.createElement('div')
-  el.className = 'share-toast'
-  el.textContent = msg
-  document.body.appendChild(el)
-  requestAnimationFrame(() => el.classList.add('share-toast--show'))
-  setTimeout(() => {
-    el.classList.remove('share-toast--show')
-    setTimeout(() => el.remove(), 300)
-  }, 1500)
-}
 
 function handleCloseModal() {
   if(isMobile.value) {
@@ -242,8 +251,8 @@ if (typeof window !== 'undefined') {
 
   /** 初始化数据 */
   const initData = async () => {
-      let params = {};
       widgetApi.addDataListener((props: any) => {
+        data.nodeInfo = props.exhibit;
         data.show = props.show;
       }, true);
 
@@ -251,49 +260,7 @@ if (typeof window !== 'undefined') {
 
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
-      const { exhibitId, itemId, collection } = widgetConfig.exhibit;
-      
-      if (type === "漫画") {
-        if (itemId) {
-          params = { exhibitId, itemId, query: { collection } };
-        } else {
-          params = { exhibitId };
-        }
-
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
-      } else if (type === "小说") {
-        if (itemId) {
-          params = { exhibitId, itemId, query: { collection } };
-        } else {
-          params = { exhibitId };
-        }
-
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
-      } else if (type === "博客") {
-        if (itemId) {
-          params = { exhibitId, itemId };
-        } else {
-          params = { exhibitId };
-        }
-
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
-      } else {
-        data.href = freelogApp.getShareUrl(
-          widgetConfig.exhibit.exhibitId,
-          widgetConfig.routerType
-        );
-      }
-
-      data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit.exhibitTitle}》\n${data.href}`;
+      data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit.exhibitTitle}》\n${data.nodeInfo.nodeUrl}`;
     };
 
     onBeforeMount(() => {
@@ -389,14 +356,17 @@ position: relative;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.share-pc-brand {
+.share-pc-node-logo {
   width: 150px;
   height: 60px;
-  background-color: pink;
   margin-bottom: 4px;
+
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;    
+  }
 }
-
-
 
 
 .share-pc-card-title {
@@ -878,6 +848,57 @@ position: relative;
   opacity: 0;
 }
 
+/* 微信/QQ 二维码弹窗--开始*/
+.qrcode-popup-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 3000;
+}
+
+.qrcode-popup {
+  position: relative;
+  padding: 30px 40px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e4e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.qrcode-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
+.qrcode-close-btn .qrcode-close-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.qrcode-text {
+  font-size: 16px;
+  color: #222;
+  line-height: 22px;
+  margin: 16px 0;
+}
+
 .qrcode-fade-enter-active,
 .qrcode-fade-leave-active {
   transition: opacity 0.2s ease;
@@ -887,4 +908,6 @@ position: relative;
 .qrcode-fade-leave-to {
   opacity: 0;
 }
+/* 微信/QQ 二维码弹窗--结束 */
+
 </style>
