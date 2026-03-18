@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "freelog-runtime": "3.6.2",
+    "qrcode.vue": "^3.8.0",
     "vue": "^3.5.30"
   },
   "devDependencies": {
