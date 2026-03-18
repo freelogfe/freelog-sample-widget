@@ -62,11 +62,9 @@
 
   <!-- 移动端 -->
   <input id="share-href-mobile" type="text" class="share-hidden-input" :value="href" readonly tabindex="-1" />
-  <div class="test">{{data.show?'打开':'关闭'}}</div>
   <Transition name="share-slide-up">
-    <div v-show="data.show && isMobile" class="mobile-share-wrap">
+    <div v-show="data.show && isMobile" id="mobile-share-wrap" class="mobile-share-wrap">
       <div class="mobile-panels" @click.self="handleCloseModal">
-        <!-- 52-40 内容卡片 -->
         <div class="mobile-card">
           <div class="mobile-card-header">
           </div>
@@ -227,9 +225,14 @@ function showToast(msg: string) {
 }
 
 function handleCloseModal() {
-  data.show = false;
-  const widgetConfig = widgetApi.getData();
-  widgetConfig.onClose();
+  if(isMobile.value) {
+    const el = document.getElementById("mobile-share-wrap");
+    if (el) el.style.display =  "none";
+  }else{
+    data.show = false;
+    const widgetConfig = widgetApi.getData();
+    widgetConfig.onClose();
+  }
 }
 
 if (typeof window !== 'undefined') {
