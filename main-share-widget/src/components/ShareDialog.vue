@@ -16,12 +16,12 @@
           <div class="share-pc-body">
             <div class="share-pc-left">
               <div class="share-pc-card">
-                <div class="share-pc-node-logo">
+                <div class="share-pc-node-logo" v-if="data.nodeInfo.nodeLogo">
                   <img :src="data.nodeInfo.nodeLogo" alt="节点logo" />
                 </div>
                   <h3 class="share-pc-card-title" v-if="data.nodeInfo.nodeTitle">{{ data.nodeInfo.nodeTitle}}</h3>
-                <p class="share-pc-desc" v-if="data.nodeInfo.nodeShortDescription">{{ data.nodeInfo.nodeShortDescription }}</p>
-                <div class="share-pc-qr-wrap">
+                <div class="share-pc-desc" v-if="data.nodeInfo.nodeShortDescription">{{ data.nodeInfo.nodeShortDescription }}</div>
+                <div ref="qrWrapRef" class="share-pc-qr-wrap">
                   <QrcodeVue :value="data.nodeInfo.nodeUrl" :size="144" level="Q" :margin="1" class="qr-code" />
                 </div>
                 <div class="share-pc-author">
@@ -66,18 +66,21 @@
     <div v-show="data.show && isMobile" id="mobile-share-wrap" class="mobile-share-wrap">
       <div class="mobile-panels" @click.self="handleCloseModal">
         <div class="mobile-card">
-          <div class="mobile-card-header">
+          <div class="mobile-card-header" v-if="data.nodeInfo.nodeLogo">
+            <img :src="data.nodeInfo.nodeLogo" alt="节点logo" />
           </div>
-          <h3 class="mobile-card-title">{{ title || '我的漫画节点' }}</h3>
-          <p class="mobile-card-desc">{{ description || '每周带你探索未知边界发现生活的新可能' }}</p>
+          <h3 class="mobile-card-title" v-if="data.nodeInfo.nodeTitle">{{ data.nodeInfo.nodeTitle }}</h3>
+          <p class="mobile-card-desc" v-if="data.nodeInfo.nodeShortDescription">{{ data.nodeInfo.nodeShortDescription }}</p>
           <div class="mobile-card-qr">
-            <div class="mobile-card-qr-wrap">
-              <QrcodeVue :value="data.href || href || 'https://freelog.com'" :size="144" level="Q" :margin="1" class="qr-code" />
+            <div ref="mobileQrWrapRef" class="mobile-card-qr-wrap">
+              <QrcodeVue :value="data.nodeInfo.nodeUrl" :size="144" level="Q" :margin="1" class="qr-code" />
             </div>
           </div>
           <div class="mobile-card-author">
-            <span class="mobile-card-avatar">{{ (authorName || '张三李四').charAt(0) }}</span>
-            <span class="mobile-card-name">{{ authorName || '张三李四' }}</span>
+            <span class="mobile-card-avatar">
+              <img :src="data.nodeInfo.avatarUrl" alt="用户头像" />
+            </span>
+            <span class="mobile-card-name">{{ data.nodeInfo.ownerUserName  }}</span>
             <span class="mobile-card-divider"></span>
             <div class="mobile-card-freelog-wrap">
               <img src="../assets/freelog.png" alt="freelog" class="mobile-card-freelog-icon">
@@ -171,8 +174,8 @@ function checkMobile() {
 
 const qrcodeVisible = ref(false)
 const qrcodeInfo = ref()
-
-
+const qrWrapRef = ref<HTMLElement | null>(null)
+const mobileQrWrapRef = ref<HTMLElement | null>(null)
 
 function handleSharePc(item: ShareBtnItem) {
   if (item.id === 'copy') {
@@ -211,14 +214,32 @@ function handleShareMobile(item: ShareBtnItem) {
     return
   }
   if (item.id === 'download') {
-    showToast('下载名片功能需主应用配合')
+    handleDownloadCard()
     return
   }
   handleShare(item)
 }
 
 function handleDownloadCard() {
-  showToast('下载名片功能需主应用配合')
+  const wrap = isMobile.value ? mobileQrWrapRef.value : qrWrapRef.value
+  const canvas = wrap?.querySelector('canvas')
+  if (!canvas) {
+    showToast('二维码未就绪')
+    return
+  }
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      showToast('生成图片失败')
+      return
+    }
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `二维码-${(data.nodeInfo.nodeTitle || 'share').replace(/[<>:"/\\|?*]/g, '_')}.png`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast('节点二维码名片已下载')
+  }, 'image/png')
 }
 
 function handleCopy() {
@@ -382,11 +403,15 @@ position: relative;
   font-weight: 400;
   color: #000000;
   line-height: 18px;
+  min-height: 36px; /* 2行 × 18px，避免第二行被裁切 */
+  width: 100%;
+  min-width: 0; /* 允许 flex 子项收缩 */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-all; /* 全英文无空格时强制换行 */
 }
 
 .share-pc-qr-wrap {
@@ -426,6 +451,12 @@ position: relative;
   font-size: 10px;
   font-weight: 600;
   color: #fff;
+
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 .share-pc-name {
@@ -583,8 +614,13 @@ position: relative;
 .mobile-card-header {
   width: 150px;
   height: 60px;
-  background-color: pink;
   margin: auto;
+
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 
 }
 
@@ -602,11 +638,15 @@ position: relative;
   line-height: 18px;
   color: #000000;
   margin-bottom: 16.5px;
+  min-height: 36px;
+  width: 100%;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-all;
 }
 
 /* 二维码：居中，白底圆角框 */
@@ -652,6 +692,11 @@ position: relative;
   font-size: 10px;
   font-weight: 600;
   color: #fff;
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 }
 
 .mobile-card-name {
