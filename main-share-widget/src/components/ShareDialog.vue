@@ -285,7 +285,7 @@ const initData = async () => {
 };
 
 onBeforeMount(() => {
-  initData();
+  (window as any).__MICRO_APP_ENVIRONMENT__ && initData();
 });
 
 onUnmounted(() => {
@@ -358,7 +358,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   width: 300px;
-  height: 400px;
+  /* height: 400px; */
   padding: 20px 30px;
   background: #fafbfc;
   border-radius: 12px;
@@ -576,12 +576,15 @@ onUnmounted(() => {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-top: 43px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .mobile-card {
   width: 300px;
-  height: 400px;
+  /* height: 400px; */
   background: #ffffff;
   padding: 20px 30px;
   border-radius: 12px;
@@ -589,7 +592,6 @@ onUnmounted(() => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
   text-align: center;
-  margin: auto;
 }
 
 .mobile-card-header {
@@ -701,11 +703,7 @@ onUnmounted(() => {
 }
 
 .mobile-share-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2001;
+  flex-shrink: 0;
   background: #ffffff;
   padding: 20px;
   border-radius: 20px 20px 0 0;
