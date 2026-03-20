@@ -370,9 +370,30 @@ async function handleDownloadCard() {
       scale: 2,
       quality: 1
     });
-    const filename = `二维码名片-${(data.nodeInfo.nodeTitle || "share").replace(/[<>:"/\\|?*]/g, "_")}`;
-    await result.download({ format: "jpeg", filename } as { format: string; filename: string });
-    showToast("节点二维码名片已下载");
+    const filename = `二维码名片-${(data.nodeInfo.nodeTitle || "share").replace(/[<>:"/\\|?*]/g, "_")}.jpg`;
+    const blob = await result.toBlob({ type: "jpeg", quality: 0.92 });
+    const file = new File([blob], filename, { type: "image/jpeg" });
+
+    // 移动端：优先弹出分享页，用户选择「保存图片」即可存到相册（首次点击即弹出）
+    if (isMobile.value && navigator.share) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "二维码名片"
+        });
+        showToast("已保存");
+      } catch (shareErr: any) {
+        if (shareErr?.name === "AbortError") {
+          showToast("已取消");
+          return;
+        }
+        await result.download({ format: "jpeg", filename } as { format: string; filename: string });
+        showToast("已下载");
+      }
+    } else {
+      await result.download({ format: "jpeg", filename } as { format: string; filename: string });
+      showToast("已下载");
+    }
   } catch (e) {
     console.error("[snapdom]", e);
     showToast("下载名片失败");
@@ -415,6 +436,7 @@ const initData = async () => {
 };
 
 onBeforeMount(() => {
+  checkMobile();
   (window as any).__MICRO_APP_ENVIRONMENT__ && initData();
 });
 
