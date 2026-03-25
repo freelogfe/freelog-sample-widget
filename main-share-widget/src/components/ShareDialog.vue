@@ -18,17 +18,92 @@
           <div class="share-title">分享</div>
           <div class="share-pc-body">
             <div class="share-pc-left">
-              <div class="share-pc-card">
-                <div class="share-pc-node-logo" v-if="data.nodeInfo.nodeLogo">
-                  <img :src="data.nodeInfo.nodeLogo" alt="节点logo" />
-                </div>
-                <h3 class="share-pc-card-title" v-if="data.nodeInfo.nodeTitle">
+              <div
+                class="share-pc-card"
+                ref="pcCardRef"
+                :style="{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  width: '300px',
+                  padding: '20px 30px',
+                  background: '#fafbfc',
+                  borderRadius: '12px',
+                  textAlign: 'center',
+                  boxSizing: 'border-box',
+                  border: '1px solid rgba(0, 0, 0, 0.05)'
+                }"
+              >
+                <div
+                  v-if="data.nodeInfo.nodeLogo"
+                  class="share-pc-node-logo"
+                  role="img"
+                  aria-label="节点logo"
+                  :style="{
+                    width: '150px',
+                    height: '60px',
+                    margin: '0 auto 4px',
+                    backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'contain'
+                  }"
+                />
+
+                <h3
+                  v-if="data.nodeInfo.nodeTitle"
+                  class="share-pc-card-title"
+                  :style="{
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    lineHeight: '20px',
+                    margin: '16.5px 0',
+                    color: '#000000',
+                    width: '100%',
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    boxSizing: 'border-box'
+                  }"
+                >
                   {{ data.nodeInfo.nodeTitle }}
                 </h3>
-                <div class="share-pc-desc" v-if="data.nodeInfo.nodeShortDescription">
+                <div
+                  v-if="data.nodeInfo.nodeShortDescription"
+                  class="share-pc-desc"
+                  :style="{
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    color: '#000000',
+                    lineHeight: '18px',
+                    minHeight: '36px',
+                    width: '100%',
+                    minWidth: 0,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    lineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    wordBreak: 'break-all',
+                    boxSizing: 'border-box'
+                  }"
+                >
                   {{ data.nodeInfo.nodeShortDescription }}
                 </div>
-                <div class="share-pc-qr-wrap">
+                <div
+                  class="share-pc-qr-wrap"
+                  :style="{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '16.5px 0',
+                    padding: '5px 8px',
+                    background: '#fff',
+                    borderRadius: '20px',
+                    border: '1px solid #e4e7eb'
+                  }"
+                >
                   <QrcodeVue
                     :value="data.nodeInfo.nodeUrl"
                     :size="144"
@@ -37,15 +112,66 @@
                     class="qr-code"
                   />
                 </div>
-                <div class="share-pc-author">
-                  <span class="share-pc-avatar">
-                    <img :src="data.nodeInfo.avatarUrl" alt="用户头像" />
-                  </span>
+                <div
+                  class="share-pc-author"
+                  :style="{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    color: '#999999'
+                  }"
+                >
+                  <span
+                    class="share-pc-avatar"
+                    role="img"
+                    aria-label="用户头像"
+                    :style="{
+                      width: '18px',
+                      height: '18px',
+                      minWidth: '18px',
+                      marginRight: '5px',
+                      borderRadius: '50%',
+                      backgroundColor: '#999999',
+                      display: 'inline-block',
+                      verticalAlign: 'middle',
+                      backgroundImage: data.nodeInfo.avatarUrl
+                        ? `url(${JSON.stringify(data.nodeInfo.avatarUrl)})`
+                        : 'none',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'contain'
+                    }"
+                  />
                   <span class="share-pc-name">{{ data.nodeInfo.ownerUserName }}</span>
-                  <span class="share-pc-divider"></span>
-                  <div class="share-pc-freelog-wrap">
-                    <img src="../assets/freelog.png" alt="freelog" class="share-pc-freelog-icon" />
-                  </div>
+                  <span
+                    class="share-pc-divider"
+                    :style="{
+                      display: 'inline-block',
+                      width: '1px',
+                      height: '12px',
+                      background: '#e4e7eb',
+                      margin: '0 20px',
+                      flexShrink: 0
+                    }"
+                  ></span>
+                  <img
+                    class="share-pc-freelog-wrap"
+                    :src="freelogLogo"
+                    alt="freelog"
+                    :style="{
+                      width: '46px',
+                      height: '10px',
+                      opacity: 0.3,
+                      display: 'inline-block',
+                      verticalAlign: 'middle',
+                      flexShrink: 0,
+                      objectFit: 'contain'
+                    }"
+                  />
                 </div>
               </div>
               <button type="button" class="share-pc-download" @click="handleDownloadCard">
@@ -93,36 +219,159 @@
   <Transition name="share-slide-up">
     <div v-show="data.show && isMobile" id="mobile-share-wrap" class="mobile-share-wrap">
       <div class="mobile-panels" @click.self="handleCloseModal">
-        <div class="mobile-card">
-          <div class="mobile-card-header" v-if="data.nodeInfo.nodeLogo">
-            <img :src="data.nodeInfo.nodeLogo" alt="节点logo" />
-          </div>
-          <h3 class="mobile-card-title" v-if="data.nodeInfo.nodeTitle">
+        <div
+          class="mobile-card"
+          ref="mobileCardRef"
+          :style="{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '300px',
+            padding: '20px 30px',
+            background: '#fafbfc',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxSizing: 'border-box',
+            border: '1px solid rgba(0, 0, 0, 0.05)'
+          }"
+        >
+          <div
+            v-if="data.nodeInfo.nodeLogo"
+            class="mobile-card-header"
+            role="img"
+            aria-label="节点logo"
+            :style="{
+              width: '150px',
+              height: '60px',
+              margin: '0 auto 4px',
+              backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              backgroundSize: 'contain'
+            }"
+          />
+          <h3
+            v-if="data.nodeInfo.nodeTitle"
+            class="mobile-card-title"
+            :style="{
+              fontSize: '16px',
+              fontWeight: 600,
+              lineHeight: '20px',
+              margin: '16.5px 0',
+              color: '#000000',
+              width: '100%',
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              boxSizing: 'border-box'
+            }"
+          >
             {{ data.nodeInfo.nodeTitle }}
           </h3>
-          <p class="mobile-card-desc" v-if="data.nodeInfo.nodeShortDescription">
+          <div
+            v-if="data.nodeInfo.nodeShortDescription"
+            class="mobile-card-desc"
+            :style="{
+              fontSize: '12px',
+              fontWeight: 400,
+              color: '#000000',
+              lineHeight: '18px',
+              minHeight: '36px',
+              width: '100%',
+              minWidth: 0,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              lineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              wordBreak: 'break-all',
+              boxSizing: 'border-box'
+            }"
+          >
             {{ data.nodeInfo.nodeShortDescription }}
-          </p>
-          <div class="mobile-card-qr">
-            <div class="mobile-card-qr-wrap">
-              <QrcodeVue
-                :value="data.nodeInfo.nodeUrl"
-                :size="144"
-                level="Q"
-                :margin="1"
-                class="qr-code"
-              />
-            </div>
           </div>
-          <div class="mobile-card-author">
-            <span class="mobile-card-avatar">
-              <img :src="data.nodeInfo.avatarUrl" alt="用户头像" />
-            </span>
+          <div
+            class="share-pc-qr-wrap"
+            :style="{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '16.5px 0',
+              padding: '5px 8px',
+              background: '#fff',
+              borderRadius: '20px',
+              border: '1px solid #e4e7eb'
+            }"
+          >
+            <QrcodeVue
+              :value="data.nodeInfo.nodeUrl"
+              :size="144"
+              level="Q"
+              :margin="1"
+              class="qr-code"
+            />
+          </div>
+          <div
+            class="mobile-card-author"
+            :style="{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              boxSizing: 'border-box',
+              fontSize: '12px',
+              fontWeight: 400,
+              color: '#999999'
+            }"
+          >
+            <span
+              class="mobile-card-avatar"
+              role="img"
+              aria-label="用户头像"
+              :style="{
+                width: '18px',
+                height: '18px',
+                minWidth: '18px',
+                marginRight: '5px',
+                borderRadius: '50%',
+                backgroundColor: '#999999',
+                display: 'inline-block',
+                verticalAlign: 'middle',
+                backgroundImage: data.nodeInfo.avatarUrl
+                  ? `url(${JSON.stringify(data.nodeInfo.avatarUrl)})`
+                  : 'none',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'contain'
+              }"
+            />
             <span class="mobile-card-name">{{ data.nodeInfo.ownerUserName }}</span>
-            <span class="mobile-card-divider"></span>
-            <div class="mobile-card-freelog-wrap">
-              <img src="../assets/freelog.png" alt="freelog" class="mobile-card-freelog-icon" />
-            </div>
+            <span
+              class="mobile-card-divider"
+              :style="{
+                display: 'inline-block',
+                width: '1px',
+                height: '12px',
+                background: '#e4e7eb',
+                margin: '0 20px',
+                flexShrink: 0
+              }"
+            ></span>
+            <img
+              class="mobile-card-freelog-wrap"
+              :src="freelogLogo"
+              alt="freelog"
+              :style="{
+                width: '46px',
+                height: '10px',
+                opacity: 0.3,
+                display: 'inline-block',
+                verticalAlign: 'middle',
+                flexShrink: 0,
+                objectFit: 'contain'
+              }"
+            />
           </div>
         </div>
       </div>
@@ -155,135 +404,6 @@
     </div>
   </Transition>
 
-  <!-- 用于高清导出的 3 倍图，关键布局用内联样式保证 snapdom 克隆时正确 -->
-  <div
-    ref="captureCardRef"
-    class="share-capture-card"
-    aria-hidden="true"
-    :style="{
-      width: '900px',
-      padding: '60px 90px',
-      background: '#fafbfc',
-      boxSizing: 'border-box',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      textAlign: 'center'
-    }"
-  >
-    <div
-      class="share-capture-logo"
-      v-if="data.nodeInfo.nodeLogo"
-      style="
-        width: 450px;
-        height: 180px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      "
-    >
-      <img
-        :src="data.nodeInfo.nodeLogo"
-        alt="节点logo"
-        style="max-width: 100%; max-height: 100%; display: block"
-      />
-    </div>
-    <h3
-      class="share-capture-title"
-      v-if="data.nodeInfo.nodeTitle"
-      style="font-size: 48px; font-weight: 600; line-height: 60px; margin: 49.5px 0; color: #000"
-    >
-      {{ data.nodeInfo.nodeTitle }}
-    </h3>
-    <div
-      class="share-capture-desc"
-      v-if="data.nodeInfo.nodeShortDescription"
-      style="
-        font-size: 36px;
-        line-height: 54px;
-        height: 108px;
-        min-height: 108px;
-        width: 100%;
-        max-width: 720px;
-        margin: 0 auto;
-        overflow: hidden;
-        word-break: break-all;
-        color: #000;
-        text-align: center;
-      "
-    >
-      {{ data.nodeInfo.nodeShortDescription }}
-    </div>
-    <div
-      class="share-capture-qr"
-      style="
-        margin: 49.5px 0;
-        padding: 15px 24px;
-        background: #fff;
-        border-radius: 60px;
-        border: 1px solid #e4e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <QrcodeVue
-        :value="data.nodeInfo.nodeUrl"
-        :size="432"
-        level="Q"
-        :margin="1"
-        class="share-capture-qr-code"
-      />
-    </div>
-    <div
-      class="share-capture-author"
-      style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 36px;
-        line-height: 54px;
-        color: #999;
-      "
-    >
-      <span
-        class="share-capture-avatar"
-        style="
-          width: 54px;
-          height: 54px;
-          min-width: 54px;
-          margin-right: 15px;
-          border-radius: 50%;
-          background: #999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-        "
-      >
-        <img
-          :src="data.nodeInfo.avatarUrl"
-          alt="用户头像"
-          style="width: 54px; height: 54px; object-fit: cover"
-        />
-      </span>
-      <span class="share-capture-name">{{ data.nodeInfo.ownerUserName }}</span>
-      <span style="width: 3px; height: 36px; background: #e4e7eb; margin: 0 60px"></span>
-      <div
-        class="share-capture-freelog"
-        style="width: 138px; height: 30px; opacity: 0.3; display: flex; align-items: center"
-      >
-        <img
-          src="../assets/freelog.png"
-          alt="freelog"
-          style="width: 100%; height: 100%; object-fit: contain"
-        />
-      </div>
-    </div>
-  </div>
-
   <!-- 微信/QQ 二维码分享弹窗 -->
   <Transition name="qrcode-fade">
     <div v-if="qrcodeVisible" class="qrcode-popup-wrapper" @click="qrcodeVisible = false">
@@ -313,6 +433,7 @@ import { shareBtns, shareBtnsMobile } from "../api/shareData";
 import type { ShareBtnItem } from "../api/shareData";
 import { MOBILE_BREAKPOINT } from "../constants/breakpoint";
 import { showToast } from "../utils/common";
+import freelogLogo from "../assets/freelog.png";
 
 const data = reactive({
   show: false,
@@ -329,7 +450,8 @@ function checkMobile() {
 
 const qrcodeVisible = ref(false);
 const qrcodeInfo = ref();
-const captureCardRef = ref<HTMLElement | null>(null);
+const pcCardRef = ref<HTMLElement | null>(null);
+const mobileCardRef = ref<HTMLElement | null>(null);
 
 function handleShareItem(item: ShareBtnItem) {
   if (item.id === "copy") return handleCopy();
@@ -357,17 +479,21 @@ function handleShareItem(item: ShareBtnItem) {
 }
 
 async function handleDownloadCard() {
-  const el = captureCardRef.value;
+  const el = isMobile.value ? mobileCardRef.value : pcCardRef.value;
 
   if (!el) {
     showToast("名片未就绪");
     return;
   }
   showToast("正在生成名片...");
+  const node = el as HTMLElement;
+  const prevInline = node.style.cssText;
+  node.style.setProperty("border", "none");
+  node.style.setProperty("border-radius", "0");
   try {
-    const result = await snapdom(el, {
+    const result = await snapdom(node, {
       backgroundColor: "#fafbfc",
-      scale: 2,
+      scale: 3,
       quality: 1
     });
     const filename = `二维码名片-${(data.nodeInfo.nodeTitle || "share").replace(/[<>:"/\\|?*]/g, "_")}.jpg`;
@@ -397,6 +523,8 @@ async function handleDownloadCard() {
   } catch (e) {
     console.error("[snapdom]", e);
     showToast("下载名片失败");
+  } finally {
+    node.style.cssText = prevInline;
   }
 }
 
@@ -458,129 +586,6 @@ onUnmounted(() => {
   z-index: 2000;
 }
 
-/* 3 倍图，独立 div 直接渲染（屏幕外） */
-.share-capture-card {
-  position: fixed;
-  left: -9999px;
-  top: 0;
-  width: 900px;
-  padding: 60px 90px;
-  background: #fafbfc;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  .share-capture-logo {
-    width: 450px;
-    height: 180px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      display: block;
-    }
-  }
-
-  .share-capture-title {
-    font-size: 48px;
-    font-weight: 600;
-    line-height: 60px;
-    margin: 49.5px 0;
-    color: #000;
-  }
-
-  .share-capture-desc {
-    font-size: 36px;
-    line-height: 54px;
-    min-height: 108px;
-    width: 100%;
-    max-width: 720px;
-    margin: 0 auto;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    word-break: break-all;
-    color: #000;
-  }
-
-  .share-capture-qr {
-    margin: 49.5px 0;
-    padding: 15px 24px;
-    background: #fff;
-    border-radius: 60px;
-    border: 1px solid #e4e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    :deep(canvas) {
-      display: block;
-    }
-  }
-
-  .share-capture-author {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    line-height: 54px;
-    color: #999;
-
-    .share-capture-avatar {
-      width: 54px;
-      height: 54px;
-      min-width: 54px;
-      margin-right: 15px;
-      border-radius: 50%;
-      background: #999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      img {
-        width: 54px;
-        height: 54px;
-        object-fit: cover;
-      }
-    }
-
-    .share-capture-name {
-      color: #999;
-    }
-
-    .share-capture-divider {
-      width: 3px;
-      height: 36px;
-      background: #e4e7eb;
-      margin: 0 60px;
-    }
-
-    .share-capture-freelog {
-      width: 138px;
-      height: 30px;
-      opacity: 0.3;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-  }
-}
-
 /* PC 端 */
 .share-dialog--pc {
   position: relative;
@@ -628,128 +633,13 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-.share-pc-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 300px;
-  /* height: 400px; */
-  padding: 20px 30px;
-  background: #fafbfc;
-  border-radius: 12px;
-  text-align: center;
-  box-sizing: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.share-pc-node-logo {
-  width: 150px;
-  height: 60px;
-  margin-bottom: 4px;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.share-pc-card-title {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20px;
-  margin: 16.5px 0;
-  color: #000000;
-}
-
-.share-pc-desc {
-  font-size: 12px;
-  font-weight: 400;
-  color: #000000;
-  line-height: 18px;
-  min-height: 36px; /* 2行 × 18px，避免第二行被裁切 */
-  width: 100%;
-  min-width: 0; /* 允许 flex 子项收缩 */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-all; /* 全英文无空格时强制换行 */
-}
-
-.share-pc-qr-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 16.5px 0;
-  padding: 5px 8px;
-  background: #fff;
-  border-radius: 20px;
-  border: 1px solid #e4e7eb;
-}
-
 .share-pc-qr-wrap :deep(canvas) {
   display: block;
 }
 
-.share-pc-author {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 400;
+.share-pc-name,
+.mobile-card-name {
   color: #999999;
-}
-
-.share-pc-avatar {
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: #999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: #fff;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.share-pc-name {
-  color: #999999;
-}
-
-.share-pc-divider {
-  width: 1px;
-  height: 12px;
-  background: #e4e7eb;
-  margin: 0 20px;
-  flex-shrink: 0;
-}
-
-.share-pc-freelog-wrap {
-  width: 46px;
-  height: 10px;
-  opacity: 0.3;
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  color: #999999;
-}
-
-.share-pc-freelog-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
 }
 
 .share-pc-download {
@@ -855,126 +745,6 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.mobile-card {
-  width: 300px;
-  /* height: 400px; */
-  background: #ffffff;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-sizing: border-box;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.mobile-card-header {
-  width: 150px;
-  height: 60px;
-  margin: auto;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.mobile-card-title {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20px;
-  color: #000000;
-  margin: 16.5px 0;
-}
-
-.mobile-card-desc {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  color: #000000;
-  margin-bottom: 16.5px;
-  min-height: 36px;
-  width: 100%;
-  min-width: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-all;
-}
-
-.mobile-card-qr {
-  display: flex;
-  justify-content: center;
-  margin: 16.5px 0;
-}
-
-.mobile-card-qr-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 8px;
-  background: #fff;
-  border-radius: 20px;
-  border: 1px solid #e4e7eb;
-}
-
-.mobile-card-author {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 400;
-  color: #999999;
-}
-
-.mobile-card-avatar {
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  margin-right: 5px;
-  border-radius: 50%;
-  background: #999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: #fff;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.mobile-card-name {
-  color: #999999;
-}
-
-.mobile-card-divider {
-  width: 1px;
-  height: 12px;
-  background: #e4e7eb;
-  margin: 0 20px;
-}
-
-.mobile-card-freelog-wrap {
-  width: 46px;
-  height: 10px;
-  opacity: 0.3;
-  display: flex;
-  align-items: center;
-}
-
-.mobile-card-freelog-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
 }
 
 .mobile-share-panel {
