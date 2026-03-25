@@ -104,13 +104,35 @@
                     border: '1px solid #e4e7eb'
                   }"
                 >
-                  <QrcodeVue
-                    :value="data.nodeInfo.nodeUrl"
-                    :size="144"
-                    level="Q"
-                    :margin="1"
-                    class="qr-code"
-                  />
+                  <div
+                    :style="{
+                      width: CARD_QR_VIEW_PX + 'px',
+                      height: CARD_QR_VIEW_PX + 'px',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      flexShrink: 0
+                    }"
+                  >
+                    <div
+                      :style="{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        width: CARD_QR_CANVAS_PX + 'px',
+                        height: CARD_QR_CANVAS_PX + 'px',
+                        transform: `translate(-50%, -50%) scale(${cardQrScale})`,
+                        transformOrigin: 'center center'
+                      }"
+                    >
+                      <QrcodeVue
+                        :value="data.nodeInfo.nodeUrl"
+                        :size="CARD_QR_CANVAS_PX"
+                        level="Q"
+                        :margin="1"
+                        class="qr-code"
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div
                   class="share-pc-author"
@@ -304,13 +326,35 @@
               border: '1px solid #e4e7eb'
             }"
           >
-            <QrcodeVue
-              :value="data.nodeInfo.nodeUrl"
-              :size="144"
-              level="Q"
-              :margin="1"
-              class="qr-code"
-            />
+            <div
+              :style="{
+                width: CARD_QR_VIEW_PX + 'px',
+                height: CARD_QR_VIEW_PX + 'px',
+                overflow: 'hidden',
+                position: 'relative',
+                flexShrink: 0
+              }"
+            >
+              <div
+                :style="{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '50%',
+                  width: CARD_QR_CANVAS_PX + 'px',
+                  height: CARD_QR_CANVAS_PX + 'px',
+                  transform: `translate(-50%, -50%) scale(${cardQrScale})`,
+                  transformOrigin: 'center center'
+                }"
+              >
+                <QrcodeVue
+                  :value="data.nodeInfo.nodeUrl"
+                  :size="CARD_QR_CANVAS_PX"
+                  level="Q"
+                  :margin="1"
+                  class="qr-code"
+                />
+              </div>
+            </div>
           </div>
           <div
             class="mobile-card-author"
@@ -453,6 +497,12 @@ const qrcodeInfo = ref();
 const pcCardRef = ref<HTMLElement | null>(null);
 const mobileCardRef = ref<HTMLElement | null>(null);
 
+/** 名片上视觉约 144px；canvas 用更高分辨率再 scale 缩小，避免导出时被 snapdom 放大插值发糊 */
+const CARD_QR_VIEW_PX = 144;
+const SNAPDOM_EXPORT_SCALE = 3;
+const CARD_QR_CANVAS_PX = CARD_QR_VIEW_PX * SNAPDOM_EXPORT_SCALE;
+const cardQrScale = CARD_QR_VIEW_PX / CARD_QR_CANVAS_PX;
+
 function handleShareItem(item: ShareBtnItem) {
   if (item.id === "copy") return handleCopy();
   if (item.id === "download") return handleDownloadCard();
@@ -493,7 +543,7 @@ async function handleDownloadCard() {
   try {
     const result = await snapdom(node, {
       backgroundColor: "#fafbfc",
-      scale: 3,
+      scale: SNAPDOM_EXPORT_SCALE,
       quality: 1
     });
     const filename = `二维码名片-${(data.nodeInfo.nodeTitle || "share").replace(/[<>:"/\\|?*]/g, "_")}.jpg`;
