@@ -503,6 +503,36 @@ const SNAPDOM_EXPORT_SCALE = 3;
 const CARD_QR_CANVAS_PX = CARD_QR_VIEW_PX * SNAPDOM_EXPORT_SCALE;
 const cardQrScale = CARD_QR_VIEW_PX / CARD_QR_CANVAS_PX;
 
+/** 名片里用到的远程图：未解码完就 snapdom 会偶发空白；OSS 需对页面 Origin 配好 CORS */
+function getShareCardRemoteImageUrls(): string[] {
+  const urls: string[] = [];
+  const logo = data.nodeInfo?.nodeLogo;
+  const avatar = data.nodeInfo?.avatarUrl;
+  if (typeof logo === "string" && logo && !logo.startsWith("data:")) urls.push(logo);
+  if (typeof avatar === "string" && avatar && !avatar.startsWith("data:")) urls.push(avatar);
+  return [...new Set(urls)];
+}
+
+function preloadImageForCapture(url: string): Promise<void> {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    const done = () => resolve();
+    img.onload = () => {
+      img.decode?.().then(done).catch(done);
+    };
+    img.onerror = done;
+    img.src = url;
+  });
+}
+
+async function ensureShareCardImagesReady() {
+  const urls = getShareCardRemoteImageUrls();
+  if (urls.length === 0) return;
+  await Promise.all(urls.map(preloadImageForCapture));
+  await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+}
+
 function handleShareItem(item: ShareBtnItem) {
   if (item.id === "copy") return handleCopy();
   if (item.id === "download") return handleDownloadCard();
@@ -541,6 +571,8 @@ async function handleDownloadCard() {
   node.style.setProperty("border", "none");
   node.style.setProperty("border-radius", "0");
   try {
+    await ensureShareCardImagesReady();
+
     const result = await snapdom(node, {
       backgroundColor: "#fafbfc",
       scale: SNAPDOM_EXPORT_SCALE,
