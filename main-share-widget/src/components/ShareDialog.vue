@@ -390,7 +390,18 @@
                 backgroundSize: 'contain'
               }"
             />
-            <span class="mobile-card-name">{{ data.nodeInfo.ownerUserName }}</span>
+            <span
+              class="mobile-card-name"
+              :style="{
+                fontFamily: 'Noto-Sans-Regular',
+                color: '#999',
+                fontSize: '10px',
+                fontWeight: 400,
+                lineHeight: '18px'
+              }"
+            >
+              {{ data.nodeInfo.ownerUserName }}
+            </span>
             <span
               class="mobile-card-divider"
               :style="{
@@ -576,7 +587,14 @@ async function handleDownloadCard() {
     const result = await snapdom(node, {
       backgroundColor: "#fafbfc",
       scale: SNAPDOM_EXPORT_SCALE,
-      quality: 1
+      quality: 1,
+      embedFonts: true,
+      localFonts: [
+        {
+          family: "Noto-Sans-Regular",
+          src: "../fonts/NotoSans-Regular.ttf"
+        }
+      ]
     });
     const filename = `二维码名片-${(data.nodeInfo.nodeTitle || "share").replace(/[<>:"/\\|?*]/g, "_")}.jpg`;
     const blob = await result.toBlob({ type: "jpeg", quality: 0.92 });
@@ -722,6 +740,7 @@ onUnmounted(() => {
 .share-pc-name,
 .mobile-card-name {
   color: #999999;
+  font-family: "Noto-Sans-Regular";
 }
 
 .share-pc-download {
@@ -814,9 +833,9 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   background: rgba(0, 0, 0, 0.35);
-  font-family:
+  /* font-family:
     -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    sans-serif;
+    sans-serif; */
 }
 
 .mobile-panels {

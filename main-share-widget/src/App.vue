@@ -7,6 +7,13 @@ import ShareDialog from "./components/ShareDialog.vue";
 </template>
 
 <style>
+@font-face {
+  font-family: "Noto-Sans-Regular";
+  src: url("./fonts/NotoSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .toast-wrapper {
   position: fixed;
   top: 50%;
