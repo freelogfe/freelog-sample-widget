@@ -2,7 +2,11 @@
   "name": "main-share-widget",
   "private": true,
   "version": "0.0.0",
+  "description": "Freelog 主页分享插件",
   "type": "module",
+  "engines": {
+    "node": "24.11.0 || >=24.11.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
