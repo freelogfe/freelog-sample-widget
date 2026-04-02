@@ -26,6 +26,7 @@
                   flexDirection: 'column',
                   alignItems: 'center',
                   width: '300px',
+                  height: '400px',
                   padding: '20px 30px',
                   background: '#fafbfc',
                   borderRadius: '12px',
@@ -35,69 +36,83 @@
                 }"
               >
                 <div
-                  v-if="data.nodeInfo.nodeLogo"
-                  class="share-pc-node-logo"
-                  role="img"
-                  aria-label="节点logo"
+                  class="share-pc-node-info"
                   :style="{
-                    width: '150px',
-                    height: '60px',
-                    margin: '0 auto 4px',
-                    backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'contain'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '146px',
+                    boxSizing: 'border-box'
                   }"
-                />
+                >
+                  <div
+                    v-if="data.nodeInfo.nodeLogo"
+                    class="share-pc-node-logo"
+                    role="img"
+                    aria-label="节点logo"
+                    :style="{
+                      width: '150px',
+                      height: '60px',
+                      margin: '0 auto',
+                      backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'contain'
+                    }"
+                  />
 
-                <h3
-                  v-if="data.nodeInfo.nodeTitle"
-                  class="share-pc-card-title"
-                  :style="{
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    lineHeight: '20px',
-                    margin: '16.5px 0',
-                    color: '#000000',
-                    width: '100%',
-                    minWidth: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    boxSizing: 'border-box'
-                  }"
-                >
-                  {{ data.nodeInfo.nodeTitle }}
-                </h3>
-                <div
-                  v-if="data.nodeInfo.nodeShortDescription"
-                  class="share-pc-desc"
-                  :style="{
-                    fontSize: '12px',
-                    fontWeight: 400,
-                    color: '#000000',
-                    lineHeight: '18px',
-                    minHeight: '36px',
-                    width: '100%',
-                    minWidth: 0,
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    lineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    wordBreak: 'break-all',
-                    boxSizing: 'border-box'
-                  }"
-                >
-                  {{ data.nodeInfo.nodeShortDescription }}
+                  <h3
+                    v-if="data.nodeInfo.nodeTitle"
+                    class="share-pc-card-title"
+                    :style="{
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      lineHeight: '20px',
+                      margin: '15px 0',
+                      color: '#000000',
+                      width: '100%',
+                      minWidth: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      boxSizing: 'border-box'
+                    }"
+                  >
+                    {{ data.nodeInfo.nodeTitle }}
+                  </h3>
+
+                  <div
+                    v-if="data.nodeInfo.nodeShortDescription"
+                    class="share-pc-desc"
+                    :style="{
+                      fontSize: '12px',
+                      fontWeight: 400,
+                      color: '#000000',
+                      lineHeight: '18px',
+                      minHeight: '36px',
+                      width: '100%',
+                      minWidth: 0,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      lineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      wordBreak: 'break-all',
+                      boxSizing: 'border-box'
+                    }"
+                  >
+                    {{ data.nodeInfo.nodeShortDescription }}
+                  </div>
                 </div>
+
                 <div
                   class="share-pc-qr-wrap"
                   :style="{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    margin: '16.5px 0',
+                    margin: '15px 0',
                     padding: '5px 8px',
                     background: '#fff',
                     borderRadius: '20px',
@@ -249,6 +264,7 @@
             flexDirection: 'column',
             alignItems: 'center',
             width: '300px',
+            height: '400px',
             padding: '20px 30px',
             background: '#fafbfc',
             borderRadius: '12px',
@@ -258,60 +274,72 @@
           }"
         >
           <div
-            v-if="data.nodeInfo.nodeLogo"
-            class="mobile-card-header"
-            role="img"
-            aria-label="节点logo"
+            class="mobile-card-node-info"
             :style="{
-              width: '150px',
-              height: '60px',
-              margin: '0 auto 4px',
-              backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              backgroundSize: 'contain'
-            }"
-          />
-          <h3
-            v-if="data.nodeInfo.nodeTitle"
-            class="mobile-card-title"
-            :style="{
-              fontSize: '16px',
-              fontWeight: 600,
-              lineHeight: '20px',
-              margin: '16.5px 0',
-              color: '#000000',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               width: '100%',
-              minWidth: 0,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
+              height: '146px',
               boxSizing: 'border-box'
             }"
           >
-            {{ data.nodeInfo.nodeTitle }}
-          </h3>
-          <div
-            v-if="data.nodeInfo.nodeShortDescription"
-            class="mobile-card-desc"
-            :style="{
-              fontSize: '12px',
-              fontWeight: 400,
-              color: '#000000',
-              lineHeight: '18px',
-              minHeight: '36px',
-              width: '100%',
-              minWidth: 0,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              lineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              wordBreak: 'break-all',
-              boxSizing: 'border-box'
-            }"
-          >
-            {{ data.nodeInfo.nodeShortDescription }}
+            <div
+              v-if="data.nodeInfo.nodeLogo"
+              class="mobile-card-header"
+              role="img"
+              aria-label="节点logo"
+              :style="{
+                width: '150px',
+                height: '60px',
+                margin: '0 auto',
+                backgroundImage: `url(${JSON.stringify(data.nodeInfo.nodeLogo)})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'contain'
+              }"
+            />
+            <h3
+              v-if="data.nodeInfo.nodeTitle"
+              class="mobile-card-title"
+              :style="{
+                fontSize: '16px',
+                fontWeight: 600,
+                lineHeight: '20px',
+                margin: '15px 0',
+                color: '#000000',
+                width: '100%',
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                boxSizing: 'border-box'
+              }"
+            >
+              {{ data.nodeInfo.nodeTitle }}
+            </h3>
+            <div
+              v-if="data.nodeInfo.nodeShortDescription"
+              class="mobile-card-desc"
+              :style="{
+                fontSize: '12px',
+                fontWeight: 400,
+                color: '#000000',
+                lineHeight: '18px',
+                minHeight: '36px',
+                width: '100%',
+                minWidth: 0,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                lineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                wordBreak: 'break-all',
+                boxSizing: 'border-box'
+              }"
+            >
+              {{ data.nodeInfo.nodeShortDescription }}
+            </div>
           </div>
           <div
             class="share-pc-qr-wrap"
@@ -319,7 +347,7 @@
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '16.5px 0',
+              margin: '15px 0',
               padding: '5px 8px',
               background: '#fff',
               borderRadius: '20px',
