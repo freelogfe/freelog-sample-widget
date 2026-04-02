@@ -68,6 +68,7 @@
                     :style="{
                       fontSize: '16px',
                       fontWeight: 600,
+                      fontFamily: 'Noto-Sans-Regular',
                       lineHeight: '20px',
                       margin: '15px 0',
                       color: '#000000',
@@ -88,6 +89,7 @@
                     :style="{
                       fontSize: '12px',
                       fontWeight: 400,
+                      fontFamily: 'Noto-Sans-Regular',
                       color: '#000000',
                       lineHeight: '18px',
                       minHeight: '36px',
@@ -305,6 +307,7 @@
               :style="{
                 fontSize: '16px',
                 fontWeight: 600,
+                fontFamily: 'Noto-Sans-Regular',
                 lineHeight: '20px',
                 margin: '15px 0',
                 color: '#000000',
@@ -324,6 +327,7 @@
               :style="{
                 fontSize: '12px',
                 fontWeight: 400,
+                fontFamily: 'Noto-Sans-Regular',
                 color: '#000000',
                 lineHeight: '18px',
                 minHeight: '36px',
