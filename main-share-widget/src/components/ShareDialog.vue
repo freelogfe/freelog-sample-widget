@@ -25,6 +25,7 @@
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
                   width: '300px',
                   height: '400px',
                   padding: '20px 30px',
@@ -42,7 +43,8 @@
                     flexDirection: 'column',
                     alignItems: 'center',
                     width: '100%',
-                    height: '146px',
+                    maxHeight: '146px',
+                    minHeight: '100px',
                     boxSizing: 'border-box'
                   }"
                 >
@@ -114,7 +116,6 @@
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    margin: '15px 0',
                     padding: '5px 8px',
                     background: '#fff',
                     borderRadius: '20px',
@@ -265,6 +266,7 @@
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'space-between',
             width: '300px',
             height: '400px',
             padding: '20px 30px',
@@ -282,7 +284,8 @@
               flexDirection: 'column',
               alignItems: 'center',
               width: '100%',
-              height: '146px',
+              maxHeight: '146px',
+              minHeight: '100px',
               boxSizing: 'border-box'
             }"
           >
@@ -351,7 +354,6 @@
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '15px 0',
               padding: '5px 8px',
               background: '#fff',
               borderRadius: '20px',
