@@ -17,17 +17,17 @@ const avatarUrl = ref<string | undefined>();
 const isNodeAdmin = ref(false);
 const isLoggedIn = ref(true); // 本地调试：已登录 / 未登录
 
-const toggleTheme = () => {
-  theme.value = theme.value === "light" ? "dark" : "light";
-};
+// const toggleTheme = () => {
+//   theme.value = theme.value === "light" ? "dark" : "light";
+// };
 
-const toggleMode = () => {
-  layout.value = layout.value === "drawer" ? "vertical" : "drawer";
-};
+// const toggleMode = () => {
+//   layout.value = layout.value === "drawer" ? "vertical" : "drawer";
+// };
 
-const toggleLogin = () => {
-  isLoggedIn.value = !isLoggedIn.value;
-};
+// const toggleLogin = () => {
+//   isLoggedIn.value = !isLoggedIn.value;
+// };
 
 function applyWidgetData(data: Record<string, unknown> | null | undefined) {
   if (!data) return;
