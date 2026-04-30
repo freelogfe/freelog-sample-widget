@@ -1,6 +1,6 @@
 <template>
   <transition name="fade-in-out">
-    <div class="share-wrapper" @click.stop v-if="show">
+    <div class="share-wrapper" @click.stop v-show="show">
       <div class="share-popup">
         <div class="share-title">分享</div>
 
