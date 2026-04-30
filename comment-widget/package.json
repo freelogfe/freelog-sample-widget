@@ -2,13 +2,19 @@
   "name": "comment-widget",
   "private": true,
   "version": "0.1.0",
+  "description": "Freelog 评论插件",
   "type": "module",
+  "engines": {
+    "node": "24.11.0 || >=24.11.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.15.0",
+    "freelog-runtime": "3.6.2",
     "vue": "^3.5.24"
   },
   "devDependencies": {
