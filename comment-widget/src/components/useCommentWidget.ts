@@ -648,6 +648,11 @@ const closeMoreMenu = () => {
   showMoreMenu.value = null;
 };
 
+/** 任意滚动（含列表/抽屉内 overflow）时收起「更多」菜单；Teleport 菜单不在触发元素树内需全局监听 */
+function closeMoreMenuOnScroll() {
+  if (showMoreMenu.value) closeMoreMenu();
+}
+
 function findCommentById(id: string): Comment | null {
   function walk(list: Comment[]): Comment | null {
     for (const c of list) {
@@ -1032,6 +1037,7 @@ const handleScroll = () => {
 
 // 抽屉模式的滚动处理
 const handleDrawerScroll = () => {
+  closeMoreMenuOnScroll();
   if (props.layout === "drawer" && drawerBodyRef.value) {
     checkDrawerRootLoadMore();
 
@@ -1073,7 +1079,7 @@ const passiveCapture: AddEventListenerOptions = { passive: true, capture: true }
  * - #app 或 parent：主题真实滚动容器（无 #app 则退化为监听 parent）
  * - visualViewport：移动端地址栏伸缩等
  * - wheel / touchmove：部分环境 scroll 不可靠时，用手势间接触发检测
- * - setInterval：iframe 内兜底轮询，避免漏事件
+ * - setInterval：iframe 内兜底轮询，仅更新「顶栏是否滚出」（不可关「更多」菜单，否则约 120ms 会误关一次导致闪烁）
  *
  * 卸载：所有注册推入 cleanups，组件卸载时一次性执行，避免泄漏。
  */
@@ -1085,36 +1091,50 @@ function bindParentScrollListeners() {
     const p = window.parent;
     if (!p || p === window) return;
 
-    const on = handleScroll;
-    const bump = () => handleScroll();
+    const onDockFloatingInputOnly = handleScroll;
 
-    p.addEventListener("resize", on);
-    cleanups.push(() => p.removeEventListener("resize", on));
+    /** 宿主真实滚动或视口变化时：更新悬浮输入 + 收起「更多」菜单 */
+    const onParentScrollOrViewportChange = () => {
+      handleScroll();
+      closeMoreMenuOnScroll();
+    };
+
+    /** 宿主滚动手势：scroll 不可靠时用 wheel/touchmove 间接触发；同时收菜单 */
+    const bumpWheelOrTouchForDock = () => {
+      handleScroll();
+      closeMoreMenuOnScroll();
+    };
+
+    p.addEventListener("resize", onParentScrollOrViewportChange);
+    cleanups.push(() => p.removeEventListener("resize", onParentScrollOrViewportChange));
 
     const scrollTarget: EventTarget = p.document.getElementById("app") ?? p;
-    scrollTarget.addEventListener("scroll", on, passiveScroll);
-    cleanups.push(() => scrollTarget.removeEventListener("scroll", on));
+    scrollTarget.addEventListener("scroll", onParentScrollOrViewportChange, passiveScroll);
+    cleanups.push(() => scrollTarget.removeEventListener("scroll", onParentScrollOrViewportChange));
 
     const vv = p.visualViewport;
     if (vv) {
-      vv.addEventListener("scroll", on, passiveScroll);
-      vv.addEventListener("resize", on);
+      vv.addEventListener("scroll", onParentScrollOrViewportChange, passiveScroll);
+      vv.addEventListener("resize", onParentScrollOrViewportChange);
       cleanups.push(() => {
-        vv.removeEventListener("scroll", on);
-        vv.removeEventListener("resize", on);
+        vv.removeEventListener("scroll", onParentScrollOrViewportChange);
+        vv.removeEventListener("resize", onParentScrollOrViewportChange);
       });
     }
 
     const doc = p.document;
-    doc.addEventListener("wheel", bump, passiveCapture);
-    doc.addEventListener("touchmove", bump, passiveCapture);
+    doc.addEventListener("wheel", bumpWheelOrTouchForDock, passiveCapture);
+    doc.addEventListener("touchmove", bumpWheelOrTouchForDock, passiveCapture);
+    doc.addEventListener("scroll", closeMoreMenuOnScroll, passiveCapture);
     cleanups.push(() => {
-      doc.removeEventListener("wheel", bump, passiveCapture);
-      doc.removeEventListener("touchmove", bump, passiveCapture);
+      doc.removeEventListener("wheel", bumpWheelOrTouchForDock, passiveCapture);
+      doc.removeEventListener("touchmove", bumpWheelOrTouchForDock, passiveCapture);
+      doc.removeEventListener("scroll", closeMoreMenuOnScroll, passiveCapture);
     });
 
     if (window.frameElement) {
-      const id = window.setInterval(handleScroll, 120);
+      /** 仅轮询「顶栏是否滚出」；勿在此关菜单，否则会每 ~120ms 误关闪烁 */
+      const id = window.setInterval(onDockFloatingInputOnly, 120);
       cleanups.push(() => clearInterval(id));
     }
 
@@ -1128,8 +1148,11 @@ function bindParentScrollListeners() {
 onMounted(() => {
   /* 插件独立运行或 iframe 内文档自身滚动时 */
   window.addEventListener("scroll", handleScroll, passiveScroll);
+  window.addEventListener("scroll", closeMoreMenuOnScroll, passiveScroll);
   window.addEventListener("resize", handleScroll);
   window.addEventListener("click", closeMoreMenu);
+  /** 捕获子树内任意滚动（不冒泡的 scroll）；与 window 兜底并用 */
+  document.addEventListener("scroll", closeMoreMenuOnScroll, passiveCapture);
 
   bindParentScrollListeners();
 
@@ -1140,9 +1163,11 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
+  window.removeEventListener("scroll", handleScroll, passiveScroll);
+  window.removeEventListener("scroll", closeMoreMenuOnScroll, passiveScroll);
   window.removeEventListener("resize", handleScroll);
   window.removeEventListener("click", closeMoreMenu);
+  document.removeEventListener("scroll", closeMoreMenuOnScroll, passiveCapture);
   unbindParentScroll?.();
   unbindParentScroll = null;
 });
