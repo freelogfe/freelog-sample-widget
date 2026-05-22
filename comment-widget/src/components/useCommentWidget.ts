@@ -88,7 +88,12 @@ const comments = ref<Comment[]>([]);
 
 // 更多菜单相关
 const showMoreMenu = ref<string | null>(null);
-const moreMenuPosition = ref({ x: 0, y: 0 });
+/** 固定定位下拉菜单：`top` / `bottom` 二选一，避免贴底时被裁掉「屏蔽」等项 */
+const moreMenuPosition = ref<{
+  left: number;
+  top: number | null;
+  bottom: number | null;
+}>({ left: 0, top: 0, bottom: null });
 
 // 举报弹窗相关
 const showReportDialog = ref(false);
@@ -617,10 +622,25 @@ const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
     showMoreMenu.value = commentId;
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
-    moreMenuPosition.value = {
-      x: rect.left,
-      y: rect.bottom + 5
-    };
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const GAP = 8;
+    const MENU_W = 110;
+    const menuPad = 20;
+    const rowH = 44;
+    const estimatedH =
+      menuPad + rowH * (props.isNodeAdmin ? 3 /* 删除 / 举报 / 屏蔽 */ : 1);
+    const margin = 8;
+    const left = Math.max(margin, Math.min(rect.left, vw - MENU_W - margin));
+    const spaceBelow = vh - rect.bottom - GAP;
+    const spaceAbove = rect.top - GAP;
+    /** 下方放不下时翻到上方（上方够高或比下方更宽裕时翻转） */
+    const openAbove =
+      spaceBelow < estimatedH &&
+      (spaceAbove >= estimatedH || spaceAbove > spaceBelow);
+    moreMenuPosition.value = openAbove
+      ? { left, top: null, bottom: vh - rect.top + GAP }
+      : { left, top: rect.bottom + GAP, bottom: null };
   }
 };
 

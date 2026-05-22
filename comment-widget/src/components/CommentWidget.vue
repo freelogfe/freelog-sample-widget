@@ -373,14 +373,19 @@ void [
       </div>
     </Transition>
 
-    <!-- 更多菜单 -->
-    <Transition name="fade">
-      <div
-        v-if="showMoreMenu"
-        class="more-menu"
-        :style="{ left: `${moreMenuPosition.x}px`, top: `${moreMenuPosition.y}px` }"
-        @click.stop
-      >
+    <!-- 更多菜单：挂到 body，避免抽屉 overflow/transform 裁剪 fixed 子节点 -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="showMoreMenu"
+          class="more-menu"
+          :style="{
+            left: `${moreMenuPosition.left}px`,
+            top: moreMenuPosition.top != null ? `${moreMenuPosition.top}px` : 'auto',
+            bottom: moreMenuPosition.bottom != null ? `${moreMenuPosition.bottom}px` : 'auto'
+          }"
+          @click.stop
+        >
         <div
           v-if="menuTargetComment && isNodeAdmin"
           class="menu-item"
@@ -436,8 +441,9 @@ void [
           </svg>
           <span>屏蔽</span>
         </div>
-      </div>
-    </Transition>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- 抽屉模式 -->
     <template v-if="layout === 'drawer'">
