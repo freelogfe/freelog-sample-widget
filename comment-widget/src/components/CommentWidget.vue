@@ -426,7 +426,7 @@ void [
             <span>举报</span>
           </div>
           <div
-            v-if="menuTargetComment && isNodeAdmin"
+            v-if="menuTargetComment && isNodeAdmin && !menuTargetComment.isBlocked"
             class="menu-item"
             :class="{ 'is-disabled': blockSubmitting || deleteSubmitting }"
             @click="handleBlock(menuTargetComment)"

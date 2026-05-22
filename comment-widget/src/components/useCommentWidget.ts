@@ -628,8 +628,13 @@ const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
     const MENU_W = 110;
     const menuPad = 20;
     const rowH = 44;
+    const targetComment = findCommentById(commentId);
+    /** 管理员：删除 / 举报 /（未屏蔽时才有）屏蔽 — 菜单高度用于避免贴底裁切 */
+    const adminMenuRows = targetComment
+      ? 2 + (targetComment.isBlocked ? 0 : 1)
+      : 3;
     const estimatedH =
-      menuPad + rowH * (props.isNodeAdmin ? 3 /* 删除 / 举报 / 屏蔽 */ : 1);
+      menuPad + rowH * (props.isNodeAdmin ? adminMenuRows : 1 /* 举报 */);
     const margin = 8;
     const left = Math.max(margin, Math.min(rect.left, vw - MENU_W - margin));
     const spaceBelow = vh - rect.bottom - GAP;
