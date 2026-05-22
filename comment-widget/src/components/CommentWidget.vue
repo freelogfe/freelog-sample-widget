@@ -379,11 +379,16 @@ void [
         <div
           v-if="showMoreMenu"
           class="more-menu"
-          :style="{
-            left: `${moreMenuPosition.left}px`,
-            top: moreMenuPosition.top != null ? `${moreMenuPosition.top}px` : 'auto',
-            bottom: moreMenuPosition.bottom != null ? `${moreMenuPosition.bottom}px` : 'auto'
-          }"
+          :class="`theme-${theme}`"
+          :style="[
+            hostSurfaceStyle ?? {},
+            {
+              left: `${moreMenuPosition.left}px`,
+              top: moreMenuPosition.top != null ? `${moreMenuPosition.top}px` : 'auto',
+              bottom:
+                moreMenuPosition.bottom != null ? `${moreMenuPosition.bottom}px` : 'auto'
+            }
+          ]"
           @click.stop
         >
         <div
