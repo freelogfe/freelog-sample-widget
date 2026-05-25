@@ -230,7 +230,7 @@
 }
 
 .comment-main.comment-blocked .view-link,
-.comment-main.comment-blocked .collapse-link,
+.comment-main.comment-blocked .blocked-comment-collapse,
 .comment-main.comment-blocked .comment-actions > .action {
   opacity: 1;
 }
@@ -299,6 +299,53 @@
 
 .blocked-content {
   opacity: 0.4;
+}
+
+/** 已屏蔽且展开：正文整块换行；收起勿继承 word-break，避免窄宽下「收起」两字竖排 */
+.comment-content-text > .blocked-expanded-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.blocked-expanded-stack .blocked-expanded-text {
+  width: 100%;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.blocked-comment-collapse {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  line-height: inherit;
+  color: var(--theme-color);
+  cursor: pointer;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-align: center;
+}
+
+.blocked-comment-collapse:hover {
+  text-decoration: underline;
+}
+
+.blocked-comment-collapse:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--theme-color) 45%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .view-link,

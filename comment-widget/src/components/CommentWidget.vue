@@ -131,22 +131,30 @@ void [
 
                 <div
                   class="comment-content-text"
-                  :class="{ blocked: comment.isBlocked && !comment.isExpanded }"
+                  :class="{
+                    blocked: comment.isBlocked && !comment.isExpanded,
+                    'blocked-expanded-row':
+                      comment.isBlocked && comment.isExpanded
+                  }"
                 >
                   <template v-if="comment.isBlocked && !comment.isExpanded">
                     <span class="blocked-text">该评论已屏蔽</span>
                     <span class="view-link" @click="toggleBlockedComment(comment)">点击查看</span>
                   </template>
                   <template v-else>
-                    <span :class="{ 'blocked-content': comment.isBlocked }">{{
-                      comment.content
-                    }}</span>
-                    <span
-                      v-if="comment.isBlocked"
-                      class="collapse-link"
-                      @click="toggleBlockedComment(comment)"
-                      >收起</span
-                    >
+                    <template v-if="comment.isBlocked">
+                      <span class="blocked-content blocked-expanded-text">{{
+                        comment.content
+                      }}</span>
+                      <button
+                        type="button"
+                        class="blocked-comment-collapse"
+                        @click="toggleBlockedComment(comment)"
+                      >
+                        收起
+                      </button>
+                    </template>
+                    <span v-else>{{ comment.content }}</span>
                   </template>
                 </div>
 
@@ -262,7 +270,11 @@ void [
                       </div>
                       <div
                         class="comment-content-text"
-                        :class="{ blocked: reply.isBlocked && !reply.isExpanded }"
+                        :class="{
+                          blocked: reply.isBlocked && !reply.isExpanded,
+                          'blocked-expanded-row':
+                            reply.isBlocked && reply.isExpanded
+                        }"
                       >
                         <template v-if="reply.isBlocked && !reply.isExpanded">
                           <span class="blocked-text">该评论已屏蔽</span>
@@ -271,17 +283,21 @@ void [
                           >
                         </template>
                         <template v-else>
-                          <span
-                            class="comment-text-body"
-                            :class="{ 'blocked-content': reply.isBlocked }"
-                            >{{ reply.content }}</span
-                          >
-                          <span
-                            v-if="reply.isBlocked"
-                            class="collapse-link"
-                            @click="toggleBlockedComment(reply)"
-                            >收起</span
-                          >
+                          <template v-if="reply.isBlocked">
+                            <span
+                              class="comment-text-body blocked-expanded-text"
+                              :class="{ 'blocked-content': reply.isBlocked }"
+                              >{{ reply.content }}</span
+                            >
+                            <button
+                              type="button"
+                              class="blocked-comment-collapse"
+                              @click="toggleBlockedComment(reply)"
+                            >
+                              收起
+                            </button>
+                          </template>
+                          <span v-else class="comment-text-body">{{ reply.content }}</span>
                         </template>
                       </div>
                       <div
@@ -613,7 +629,11 @@ void [
 
                       <div
                         class="comment-content-text"
-                        :class="{ blocked: comment.isBlocked && !comment.isExpanded }"
+                        :class="{
+                          blocked: comment.isBlocked && !comment.isExpanded,
+                          'blocked-expanded-row':
+                            comment.isBlocked && comment.isExpanded
+                        }"
                       >
                         <template v-if="comment.isBlocked && !comment.isExpanded">
                           <span class="blocked-text">该评论已屏蔽</span>
@@ -622,15 +642,19 @@ void [
                           >
                         </template>
                         <template v-else>
-                          <span :class="{ 'blocked-content': comment.isBlocked }">{{
-                            comment.content
-                          }}</span>
-                          <span
-                            v-if="comment.isBlocked"
-                            class="collapse-link"
-                            @click="toggleBlockedComment(comment)"
-                            >收起</span
-                          >
+                          <template v-if="comment.isBlocked">
+                            <span class="blocked-content blocked-expanded-text">{{
+                              comment.content
+                            }}</span>
+                            <button
+                              type="button"
+                              class="blocked-comment-collapse"
+                              @click="toggleBlockedComment(comment)"
+                            >
+                              收起
+                            </button>
+                          </template>
+                          <span v-else>{{ comment.content }}</span>
                         </template>
                       </div>
 
@@ -754,7 +778,11 @@ void [
                             </div>
                             <div
                               class="comment-content-text"
-                              :class="{ blocked: reply.isBlocked && !reply.isExpanded }"
+                              :class="{
+                                blocked: reply.isBlocked && !reply.isExpanded,
+                                'blocked-expanded-row':
+                                  reply.isBlocked && reply.isExpanded
+                              }"
                             >
                               <template v-if="reply.isBlocked && !reply.isExpanded">
                                 <span class="blocked-text">该评论已屏蔽</span>
@@ -763,17 +791,21 @@ void [
                                 >
                               </template>
                               <template v-else>
-                                <span
-                                  class="comment-text-body"
-                                  :class="{ 'blocked-content': reply.isBlocked }"
-                                  >{{ reply.content }}</span
-                                >
-                                <span
-                                  v-if="reply.isBlocked"
-                                  class="collapse-link"
-                                  @click="toggleBlockedComment(reply)"
-                                  >收起</span
-                                >
+                                <template v-if="reply.isBlocked">
+                                  <span
+                                    class="comment-text-body blocked-expanded-text"
+                                    :class="{ 'blocked-content': reply.isBlocked }"
+                                    >{{ reply.content }}</span
+                                  >
+                                  <button
+                                    type="button"
+                                    class="blocked-comment-collapse"
+                                    @click="toggleBlockedComment(reply)"
+                                  >
+                                    收起
+                                  </button>
+                                </template>
+                                <span v-else class="comment-text-body">{{ reply.content }}</span>
                               </template>
                             </div>
                             <div
