@@ -15,6 +15,7 @@ const {
   hostSurfaceStyle,
   drawerVisible,
   commentInput,
+  COMMENT_MAX_LENGTH,
   replyingTo,
   comments,
   showMoreMenu,
@@ -100,7 +101,11 @@ void [
             <img :src="avatarUrl" alt="avatar" />
           </div>
           <div class="input-box">
-            <textarea v-model="commentInput" placeholder="写下你的评论..."></textarea>
+            <textarea
+              v-model="commentInput"
+              :maxlength="COMMENT_MAX_LENGTH"
+              placeholder="写下你的评论..."
+            ></textarea>
             <button
               class="btn-publish"
               :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -220,6 +225,7 @@ void [
               <div class="input-box">
                 <textarea
                   v-model="commentInput"
+                  :maxlength="COMMENT_MAX_LENGTH"
                   :placeholder="`回复@${replyingTo.username}：`"
                   @keydown.enter.ctrl="handlePublish"
                 ></textarea>
@@ -370,6 +376,7 @@ void [
                     <div class="input-box">
                       <textarea
                         v-model="commentInput"
+                        :maxlength="COMMENT_MAX_LENGTH"
                         :placeholder="`回复@${replyingTo.username}：`"
                         @keydown.enter.ctrl="handlePublish"
                       ></textarea>
@@ -459,7 +466,11 @@ void [
           <img :src="avatarUrl" alt="avatar" />
         </div>
         <div class="input-box">
-          <textarea v-model="commentInput" placeholder="写下你的评论..."></textarea>
+          <textarea
+              v-model="commentInput"
+              :maxlength="COMMENT_MAX_LENGTH"
+              placeholder="写下你的评论..."
+            ></textarea>
           <button
             class="btn-publish"
             :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -609,7 +620,11 @@ void [
                   <img :src="avatarUrl" alt="avatar" />
                 </div>
                 <div class="input-box">
-                  <textarea v-model="commentInput" placeholder="写下你的评论..." ></textarea>
+                  <textarea
+                    v-model="commentInput"
+                    :maxlength="COMMENT_MAX_LENGTH"
+                    placeholder="写下你的评论..."
+                  ></textarea>
                   <button
                     class="btn-publish"
                     :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -737,6 +752,7 @@ void [
                     <div class="input-box">
                       <textarea
                         v-model="commentInput"
+                        :maxlength="COMMENT_MAX_LENGTH"
                         :placeholder="`回复@${replyingTo.username}：`"
                         @keydown.enter.ctrl="handlePublish"
                       ></textarea>
@@ -889,6 +905,7 @@ void [
                           <div class="input-box">
                             <textarea
                               v-model="commentInput"
+                              :maxlength="COMMENT_MAX_LENGTH"
                               :placeholder="`回复@${replyingTo.username}：`"
                               @keydown.enter.ctrl="handlePublish"
                             ></textarea>
@@ -976,7 +993,11 @@ void [
                   <img :src="avatarUrl" alt="avatar" />
                 </div>
                 <div class="input-box">
-                  <textarea v-model="commentInput" placeholder="写下你的评论..."></textarea>
+                  <textarea
+              v-model="commentInput"
+              :maxlength="COMMENT_MAX_LENGTH"
+              placeholder="写下你的评论..."
+            ></textarea>
                   <button
                     class="btn-publish"
                     :class="{ disabled: !commentInput.trim() || publishSubmitting }"

@@ -70,6 +70,9 @@ export interface Comment {
 
 export type ReplyPageLinkItem = { type: "page"; page: number } | { type: "ellipsis" };
 
+/** 发表评论 / 回复内容最大字符数 */
+export const COMMENT_MAX_LENGTH = 1000;
+
 export function useCommentWidget(props: CommentWidgetProps) {
 const verticalContainerWidth = computed(() => {
   const width = document.querySelector(".vertical-container")?.clientWidth;
@@ -445,6 +448,10 @@ function clearAllReplyInputs() {
 const handlePublish = async () => {
   const text = commentInput.value.trim();
   if (!text || publishSubmitting.value) return;
+  if (text.length > COMMENT_MAX_LENGTH) {
+    alert(`评论内容不能超过 ${COMMENT_MAX_LENGTH} 字`);
+    return;
+  }
 
   const exhibitId = props.exhibitId?.trim();
   const replyTarget = replyingTo.value;
@@ -1276,6 +1283,7 @@ onUnmounted(() => {
     hostSurfaceStyle,
     drawerVisible,
     commentInput,
+    COMMENT_MAX_LENGTH,
     replyingTo,
     comments,
     showMoreMenu,
