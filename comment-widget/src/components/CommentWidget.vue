@@ -57,6 +57,7 @@ const {
   shouldShowReplyExpandControl,
   getReplyListTotal,
   getTotalReplyPages,
+  getReplyPageLinkItems,
   toggleReplies,
   changeReplyPage,
   nextReplyPage,
@@ -402,15 +403,26 @@ void [
                     {{ getReplyListTotal(comment) }}条回复</span
                   >
                   <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
-                  <span
-                    v-for="page in getTotalReplyPages(comment)"
-                    :key="page"
-                    class="page-link"
-                    :class="{ active: comment.currentReplyPage === page }"
-                    @click="changeReplyPage(comment, page)"
+                  <template
+                    v-for="(item, index) in getReplyPageLinkItems(comment)"
+                    :key="
+                      item.type === 'page'
+                        ? `page-${item.page}`
+                        : `ellipsis-${index}`
+                    "
                   >
-                    {{ page }}
-                  </span>
+                    <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
+                    <span
+                      v-else
+                      class="page-link"
+                      :class="{
+                        active: (comment.currentReplyPage || 1) === item.page
+                      }"
+                      @click="changeReplyPage(comment, item.page)"
+                    >
+                      {{ item.page }}
+                    </span>
+                  </template>
                   <span
                     v-if="
                       comment.currentReplyPage &&
@@ -910,15 +922,26 @@ void [
                           {{ getReplyListTotal(comment) }}条回复</span
                         >
                         <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
-                        <span
-                          v-for="page in getTotalReplyPages(comment)"
-                          :key="page"
-                          class="page-link"
-                          :class="{ active: comment.currentReplyPage === page }"
-                          @click="changeReplyPage(comment, page)"
+                        <template
+                          v-for="(item, index) in getReplyPageLinkItems(comment)"
+                          :key="
+                            item.type === 'page'
+                              ? `page-${item.page}`
+                              : `ellipsis-${index}`
+                          "
                         >
-                          {{ page }}
-                        </span>
+                          <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
+                          <span
+                            v-else
+                            class="page-link"
+                            :class="{
+                              active: (comment.currentReplyPage || 1) === item.page
+                            }"
+                            @click="changeReplyPage(comment, item.page)"
+                          >
+                            {{ item.page }}
+                          </span>
+                        </template>
                         <span
                           v-if="
                             comment.currentReplyPage &&

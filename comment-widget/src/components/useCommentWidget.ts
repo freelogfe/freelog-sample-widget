@@ -68,6 +68,8 @@ export interface Comment {
   repliesLoading?: boolean;
 }
 
+export type ReplyPageLinkItem = { type: "page"; page: number } | { type: "ellipsis" };
+
 export function useCommentWidget(props: CommentWidgetProps) {
 const verticalContainerWidth = computed(() => {
   const width = document.querySelector(".vertical-container")?.clientWidth;
@@ -999,6 +1001,48 @@ const getTotalReplyPages = (comment: Comment) => {
   return Math.ceil(getReplyListTotal(comment) / pageSize);
 };
 
+/** 折叠页码：始终保留首尾页，当前页及相邻页，中间用省略号 */
+function buildReplyPageLinks(
+  totalPages: number,
+  currentPage: number,
+  siblingCount = 1,
+  boundaryCount = 1
+): ReplyPageLinkItem[] {
+  if (totalPages <= 0) return [];
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => ({
+      type: "page" as const,
+      page: i + 1
+    }));
+  }
+
+  const pages = new Set<number>();
+  for (let i = 1; i <= Math.min(boundaryCount, totalPages); i++) pages.add(i);
+  for (let i = Math.max(1, totalPages - boundaryCount + 1); i <= totalPages; i++) {
+    pages.add(i);
+  }
+  for (let i = currentPage - siblingCount; i <= currentPage + siblingCount; i++) {
+    if (i >= 1 && i <= totalPages) pages.add(i);
+  }
+
+  const sorted = [...pages].sort((a, b) => a - b);
+  const items: ReplyPageLinkItem[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    const page = sorted[i]!;
+    if (i > 0 && page - sorted[i - 1]! > 1) {
+      items.push({ type: "ellipsis" });
+    }
+    items.push({ type: "page", page });
+  }
+  return items;
+}
+
+const getReplyPageLinkItems = (comment: Comment): ReplyPageLinkItem[] => {
+  const totalPages = getTotalReplyPages(comment);
+  const currentPage = comment.currentReplyPage || 1;
+  return buildReplyPageLinks(totalPages, currentPage);
+};
+
 const submitReport = async () => {
   if (!props.isLoggedIn) {
     props.onLogin?.();
@@ -1266,6 +1310,7 @@ onUnmounted(() => {
     shouldShowReplyExpandControl,
     getReplyListTotal,
     getTotalReplyPages,
+    getReplyPageLinkItems,
     toggleReplies,
     changeReplyPage,
     nextReplyPage,
