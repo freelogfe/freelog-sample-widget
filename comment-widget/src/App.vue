@@ -14,6 +14,7 @@ const textSecondary = ref<string | undefined>();
 const exhibitId = ref<string | undefined>();
 const itemId = ref<string | undefined>();
 const avatarUrl = ref<string | undefined>();
+const currentUserId = ref<number | undefined>();
 const isNodeAdmin = ref(false);
 const isLoggedIn = ref(true); // 本地调试：已登录 / 未登录
 
@@ -73,6 +74,12 @@ function applyWidgetData(data: Record<string, unknown> | null | undefined) {
       typeof data.avatarUrl === "string" && data.avatarUrl.trim()
         ? data.avatarUrl.trim()
         : undefined;
+  }
+  if ("currentUserId" in data) {
+    const raw = data.currentUserId;
+    const n =
+      typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
+    currentUserId.value = Number.isFinite(n) ? n : undefined;
   }
   if ("isNodeAdmin" in data) {
     isNodeAdmin.value = data.isNodeAdmin as boolean;
@@ -134,6 +141,7 @@ onBeforeMount(() => {
       :exhibit-id="exhibitId"
       :item-id="itemId"
       :avatar-url="avatarUrl"
+      :current-user-id="currentUserId"
       :on-close="handleDrawerCloseFromChild"
       :on-login="handleLoginFromChild"
       :is-logged-in="isLoggedIn"

@@ -43,6 +43,8 @@ const {
   commentAvatarStyle,
   toggleLike,
   hasLikeCount,
+  commentHasMoreMenuActions,
+  showReportInMoreMenuFor,
   toggleMoreMenu,
   closeMoreMenu,
   menuTargetComment,
@@ -168,7 +170,11 @@ void [
                     </svg>
                   </div>
 
-                  <div class="action-button more" @click="toggleMoreMenu(comment.id, $event)">
+                  <div
+                    v-if="commentHasMoreMenuActions(comment)"
+                    class="action-button more"
+                    @click="toggleMoreMenu(comment.id, $event)"
+                  >
                     <svg width="14" height="3" viewBox="0 0 14 3">
                       <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
                       <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
@@ -264,7 +270,11 @@ void [
                           </svg>
                         </div>
 
-                        <div class="action-button more" @click="toggleMoreMenu(reply.id, $event)">
+                        <div
+                          v-if="commentHasMoreMenuActions(reply)"
+                          class="action-button more"
+                          @click="toggleMoreMenu(reply.id, $event)"
+                        >
                           <svg width="14" height="3" viewBox="0 0 14 3">
                             <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
                             <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
@@ -410,7 +420,11 @@ void [
             </svg>
             <span>删除</span>
           </div>
-          <div class="menu-item" @click="handleReport()">
+          <div
+            v-if="menuTargetComment && showReportInMoreMenuFor(menuTargetComment)"
+            class="menu-item"
+            @click="handleReport()"
+          >
             <svg
               width="15"
               height="16"
@@ -507,7 +521,7 @@ void [
                   <img :src="avatarUrl" alt="avatar" />
                 </div>
                 <div class="input-box">
-                  <textarea v-model="commentInput" placeholder="写下你的评论..."></textarea>
+                  <textarea v-model="commentInput" placeholder="写下你的评论..." ></textarea>
                   <button
                     class="btn-publish"
                     :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -586,7 +600,11 @@ void [
                           </svg>
                         </div>
 
-                        <div class="action-button more" @click="toggleMoreMenu(comment.id, $event)">
+                        <div
+                          v-if="commentHasMoreMenuActions(comment)"
+                          class="action-button more"
+                          @click="toggleMoreMenu(comment.id, $event)"
+                        >
                           <svg width="14" height="3" viewBox="0 0 14 3">
                             <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
                             <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
@@ -685,6 +703,7 @@ void [
                               </div>
 
                               <div
+                                v-if="commentHasMoreMenuActions(reply)"
                                 class="action-button more"
                                 @click="toggleMoreMenu(reply.id, $event)"
                               >

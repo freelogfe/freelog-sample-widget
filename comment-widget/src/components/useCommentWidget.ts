@@ -25,6 +25,8 @@ export interface CommentWidgetProps {
   /** 展品子项 ID */
   itemId?: string;
   avatarUrl?: string;
+  /** 当前登录用户的 userId，与评论条的 userId 比对；宿主传入后即可禁止举报本人评论 */
+  currentUserId?: number;
   /** 抽屉关闭时回传主应用，与 data.onClose 一致 */
   onClose?: () => void;
   onLogin?: () => void;
@@ -614,8 +616,42 @@ function hasLikeCount(likes: number | undefined): boolean {
   return (likes ?? 0) > 0;
 }
 
+function resolvedViewerUserId(): number | undefined {
+  const raw = props.currentUserId;
+  if (raw != null && Number.isFinite(Number(raw))) return Number(raw);
+  return undefined;
+}
+
+function commentIsOwnByViewer(comment: Comment): boolean {
+  const vid = resolvedViewerUserId() ;
+  const aid = comment.userId;
+  if (vid == null || aid == null) return false;
+  return Number(vid) === Number(aid);
+}
+
+/** 「更多」里是否展示举报（不能举报本人评论） */
+function showReportInMoreMenuFor(comment: Comment): boolean {
+  return !commentIsOwnByViewer(comment);
+}
+
+function countMoreMenuRows(comment: Comment): number {
+  let n = 0;
+  if (props.isNodeAdmin) n += 1;
+  if (showReportInMoreMenuFor(comment)) n += 1;
+  if (props.isNodeAdmin && !comment.isBlocked) n += 1;
+  return n;
+}
+
+function commentHasMoreMenuActions(comment: Comment): boolean {
+  return countMoreMenuRows(comment) > 0;
+}
+
 const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
   event.stopPropagation();
+  const opener = findCommentById(commentId);
+  if (!opener || countMoreMenuRows(opener) === 0) {
+    return;
+  }
   if (showMoreMenu.value === commentId) {
     showMoreMenu.value = null;
   } else {
@@ -628,13 +664,8 @@ const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
     const MENU_W = 110;
     const menuPad = 20;
     const rowH = 44;
-    const targetComment = findCommentById(commentId);
-    /** 管理员：删除 / 举报 /（未屏蔽时才有）屏蔽 — 菜单高度用于避免贴底裁切 */
-    const adminMenuRows = targetComment
-      ? 2 + (targetComment.isBlocked ? 0 : 1)
-      : 3;
-    const estimatedH =
-      menuPad + rowH * (props.isNodeAdmin ? adminMenuRows : 1 /* 举报 */);
+    const menuRows = countMoreMenuRows(opener);
+    const estimatedH = menuPad + rowH * menuRows;
     const margin = 8;
     const left = Math.max(margin, Math.min(rect.left, vw - MENU_W - margin));
     const spaceBelow = vh - rect.bottom - GAP;
@@ -735,7 +766,10 @@ const handleDelete = async (comment: Comment) => {
 };
 
 const handleReport = () => {
-  const id = showMoreMenu.value?.trim() || null;
+  const c = menuTargetComment.value;
+  if (!c || !showReportInMoreMenuFor(c)) return;
+  const id = c.id?.trim() || null;
+  if (!id) return;
   reportTargetCommentId.value = id;
   reportReason.value = "";
   reportDetail.value = "";
@@ -971,6 +1005,12 @@ const submitReport = async () => {
   const commentId = reportTargetCommentId.value?.trim();
   if (!commentId) {
     alert("缺少评论信息，请重新操作");
+    return;
+  }
+  const reported = findCommentById(commentId);
+  if (reported && !showReportInMoreMenuFor(reported)) {
+    alert("不能举报自己的评论");
+    closeReportDialog();
     return;
   }
   if (!reportReason.value || (reportReason.value === "other" && !reportDetail.value.trim())) {
@@ -1210,6 +1250,8 @@ onUnmounted(() => {
     commentAvatarStyle,
     toggleLike,
     hasLikeCount,
+    commentHasMoreMenuActions,
+    showReportInMoreMenuFor,
     toggleMoreMenu,
     closeMoreMenu,
     menuTargetComment,
