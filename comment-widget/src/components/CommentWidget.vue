@@ -148,7 +148,7 @@ void [
                     <span class="view-link" @click="toggleBlockedComment(comment)">点击查看</span>
                   </template>
                   <template v-else>
-                    <template v-if="comment.isBlocked">
+                    <div v-if="comment.isBlocked" class="blocked-expanded-stack">
                       <span class="comment-text-body blocked-content blocked-expanded-text">{{
                         comment.content
                       }}</span>
@@ -159,7 +159,7 @@ void [
                       >
                         收起
                       </button>
-                    </template>
+                    </div>
                     <span v-else class="comment-text-body">{{ comment.content }}</span>
                   </template>
                 </div>
@@ -297,7 +297,7 @@ void [
                           >
                         </template>
                         <template v-else>
-                          <template v-if="reply.isBlocked">
+                          <div v-if="reply.isBlocked" class="blocked-expanded-stack">
                             <span
                               class="comment-text-body blocked-expanded-text"
                               :class="{ 'blocked-content': reply.isBlocked }"
@@ -310,7 +310,7 @@ void [
                             >
                               收起
                             </button>
-                          </template>
+                          </div>
                           <span v-else class="comment-text-body">{{ reply.content }}</span>
                         </template>
                       </div>
@@ -676,7 +676,7 @@ void [
                           >
                         </template>
                         <template v-else>
-                          <template v-if="comment.isBlocked">
+                          <div v-if="comment.isBlocked" class="blocked-expanded-stack">
                             <span class="comment-text-body blocked-content blocked-expanded-text">{{
                               comment.content
                             }}</span>
@@ -687,7 +687,7 @@ void [
                             >
                               收起
                             </button>
-                          </template>
+                          </div>
                           <span v-else class="comment-text-body">{{ comment.content }}</span>
                         </template>
                       </div>
@@ -833,7 +833,7 @@ void [
                                 >
                               </template>
                               <template v-else>
-                                <template v-if="reply.isBlocked">
+                                <div v-if="reply.isBlocked" class="blocked-expanded-stack">
                                   <span
                                     class="comment-text-body blocked-expanded-text"
                                     :class="{ 'blocked-content': reply.isBlocked }"
@@ -846,7 +846,7 @@ void [
                                   >
                                     收起
                                   </button>
-                                </template>
+                                </div>
                                 <span v-else class="comment-text-body">{{ reply.content }}</span>
                               </template>
                             </div>
