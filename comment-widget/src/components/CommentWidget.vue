@@ -260,11 +260,35 @@ void [
                           <span v-if="reply.replyTo" class="username">{{ reply.replyTo }}</span>
                         </div>
                       </div>
-                      <div class="comment-content-text">
-                        <span class="comment-text-body">{{ reply.content }}</span>
+                      <div
+                        class="comment-content-text"
+                        :class="{ blocked: reply.isBlocked && !reply.isExpanded }"
+                      >
+                        <template v-if="reply.isBlocked && !reply.isExpanded">
+                          <span class="blocked-text">该评论已屏蔽</span>
+                          <span class="view-link" @click="toggleBlockedComment(reply)"
+                            >点击查看</span
+                          >
+                        </template>
+                        <template v-else>
+                          <span
+                            class="comment-text-body"
+                            :class="{ 'blocked-content': reply.isBlocked }"
+                            >{{ reply.content }}</span
+                          >
+                          <span
+                            v-if="reply.isBlocked"
+                            class="collapse-link"
+                            @click="toggleBlockedComment(reply)"
+                            >收起</span
+                          >
+                        </template>
                       </div>
                       <div
-                        v-if="!comment.isBlocked || comment.isExpanded"
+                        v-if="
+                          (!comment.isBlocked || comment.isExpanded) &&
+                          (!reply.isBlocked || reply.isExpanded)
+                        "
                         class="comment-actions"
                       >
                         <span class="time">{{ reply.time }}</span>
@@ -303,12 +327,26 @@ void [
                             <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                           </svg>
                         </div>
+
+                        <span
+                          v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
+                          class="action"
+                          @click="handleUnblock(reply)"
+                          >取消屏蔽</span
+                        >
                       </div>
                     </div>
                   </div>
 
                   <!-- 回复的回复输入框 -->
-                  <div v-if="reply.showReplyInput && replyingTo" class="reply-input-section nested">
+                  <div
+                    v-if="
+                      reply.showReplyInput &&
+                      replyingTo &&
+                      (!reply.isBlocked || reply.isExpanded)
+                    "
+                    class="reply-input-section nested"
+                  >
                     <div class="avatar small">
                       <img :src="avatarUrl" alt="avatar" />
                     </div>
@@ -480,6 +518,26 @@ void [
               />
             </svg>
             <span>屏蔽</span>
+          </div>
+          <div
+            v-if="menuTargetComment && isNodeAdmin && menuTargetComment.isBlocked"
+            class="menu-item"
+            :class="{ 'is-disabled': blockSubmitting || deleteSubmitting }"
+            @click="handleUnblock(menuTargetComment)"
+          >
+            <svg
+              width="16"
+              height="11"
+              viewBox="0 0 64 44"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M32 0C44.2216 0 57.3358 6.80938 63.6455 21.1924L64 22L63.6455 22.8076C57.3358 37.1906 44.2216 44 32 44C19.7784 44 6.66416 37.1906 0.354492 22.8076L0 22L0.354492 21.1924C6.66416 6.80938 19.7784 2.04973e-07 32 0ZM32 4C21.4478 4 10.1077 9.7428 4.36035 22C10.1077 34.2572 21.4478 40 32 40C42.5521 40 53.8913 34.2569 59.6387 22C53.8913 9.74306 42.5521 4 32 4ZM32 10C38.589 10 43.9307 15.3726 43.9307 22C43.9307 28.6274 38.589 34 32 34C25.411 34 20.0693 28.6274 20.0693 22C20.0693 15.3726 25.411 10 32 10ZM32 14C27.6073 14 24.0459 17.5817 24.0459 22C24.0459 26.4183 27.6073 30 32 30C36.3927 30 39.9541 26.4183 39.9541 22C39.9541 17.5817 36.3927 14 32 14Z"
+                fill="currentColor"
+              />
+            </svg>
+            <span>取消屏蔽</span>
           </div>
         </div>
       </Transition>
@@ -714,11 +772,35 @@ void [
                                 }}</span>
                               </div>
                             </div>
-                            <div class="comment-content-text">
-                              <span class="comment-text-body">{{ reply.content }}</span>
+                            <div
+                              class="comment-content-text"
+                              :class="{ blocked: reply.isBlocked && !reply.isExpanded }"
+                            >
+                              <template v-if="reply.isBlocked && !reply.isExpanded">
+                                <span class="blocked-text">该评论已屏蔽</span>
+                                <span class="view-link" @click="toggleBlockedComment(reply)"
+                                  >点击查看</span
+                                >
+                              </template>
+                              <template v-else>
+                                <span
+                                  class="comment-text-body"
+                                  :class="{ 'blocked-content': reply.isBlocked }"
+                                  >{{ reply.content }}</span
+                                >
+                                <span
+                                  v-if="reply.isBlocked"
+                                  class="collapse-link"
+                                  @click="toggleBlockedComment(reply)"
+                                  >收起</span
+                                >
+                              </template>
                             </div>
                             <div
-                              v-if="!comment.isBlocked || comment.isExpanded"
+                              v-if="
+                                (!comment.isBlocked || comment.isExpanded) &&
+                                (!reply.isBlocked || reply.isExpanded)
+                              "
                               class="comment-actions"
                             >
                               <span class="time">{{ reply.time }}</span>
@@ -757,13 +839,24 @@ void [
                                   <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                                 </svg>
                               </div>
+
+                              <span
+                                v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
+                                class="action"
+                                @click="handleUnblock(reply)"
+                                >取消屏蔽</span
+                              >
                             </div>
                           </div>
                         </div>
 
                         <!-- 回复的回复输入框 -->
                         <div
-                          v-if="reply.showReplyInput && replyingTo"
+                          v-if="
+                            reply.showReplyInput &&
+                            replyingTo &&
+                            (!reply.isBlocked || reply.isExpanded)
+                          "
                           class="reply-input-section nested"
                         >
                           <div class="avatar small">

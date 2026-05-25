@@ -639,6 +639,7 @@ function countMoreMenuRows(comment: Comment): number {
   if (props.isNodeAdmin) n += 1;
   if (showReportInMoreMenuFor(comment)) n += 1;
   if (props.isNodeAdmin && !comment.isBlocked) n += 1;
+  if (props.isNodeAdmin && comment.isBlocked) n += 1;
   return n;
 }
 
@@ -815,6 +816,7 @@ const handleUnblock = async (comment: Comment) => {
       alert(res.msg || "操作失败");
       return;
     }
+    closeMoreMenu();
     const exhibitId = props.exhibitId?.trim();
     if (exhibitId) {
       await syncCommentsFromApi(exhibitId);
