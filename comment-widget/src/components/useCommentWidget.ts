@@ -836,15 +836,23 @@ const toggleBlockedComment = (comment: Comment) => {
   comment.isExpanded = !comment.isExpanded;
 };
 
-/** 抽屉模式：展开后每页条数 */
-const REPLY_PAGE_SIZE_DRAWER = 10;
+/** 垂直模式折叠时预览条数 */
+const REPLY_PREVIEW_SIZE_VERTICAL = 3;
 
-/** 垂直模式 vertical-container：折叠预览与展开翻页均为每页 3 条 */
-const REPLY_PAGE_SIZE_VERTICAL = 3;
+/** 展开回复后每页条数（垂直 / 抽屉一致） */
+const REPLY_PAGE_SIZE_EXPANDED = 10;
 
-/** 垂直每页 3 条，抽屉每页 10 条 */
-function getReplyPageSizeByLayout(): number {
-  return props.layout === "vertical" ? REPLY_PAGE_SIZE_VERTICAL : REPLY_PAGE_SIZE_DRAWER;
+/** 折叠预览：垂直 3 条，抽屉 10 条 */
+function getReplyPreviewSize(): number {
+  return props.layout === "vertical" ? REPLY_PREVIEW_SIZE_VERTICAL : REPLY_PAGE_SIZE_EXPANDED;
+}
+
+function getReplyExpandedPageSize(): number {
+  return REPLY_PAGE_SIZE_EXPANDED;
+}
+
+function getReplyPageSize(comment: Comment): number {
+  return comment.showAllReplies ? getReplyExpandedPageSize() : getReplyPreviewSize();
 }
 
 /** 回复条数：优先接口 total，并与已加载列表取较大值，避免只拉了前几条但总数更大时不显示「展开」 */
@@ -859,7 +867,7 @@ function getReplyListTotal(comment: Comment): number {
 
 /** 当前 UI 展示所需的最少已加载子评论数（折叠=第 1 页，展开=当前页及之前） */
 function getRequiredLoadedReplyCount(comment: Comment): number {
-  const pageSize = getReplyPageSizeByLayout();
+  const pageSize = getReplyPageSize(comment);
   const total = getReplyListTotal(comment);
   const page = comment.showAllReplies ? comment.currentReplyPage || 1 : 1;
   return Math.min(total, page * pageSize);
@@ -954,7 +962,7 @@ async function fetchMoreSubRepliesIfNeeded(comment: Comment): Promise<void> {
 }
 
 function shouldShowReplyExpandControl(comment: Comment): boolean {
-  const pageSize = getReplyPageSizeByLayout();
+  const pageSize = getReplyPreviewSize();
   return (comment.replies?.length ?? 0) > 0 && getReplyListTotal(comment) > pageSize;
 }
 
@@ -975,7 +983,7 @@ const changeReplyPage = (comment: Comment, page: number) => {
 };
 
 const nextReplyPage = (comment: Comment) => {
-  const pageSize = getReplyPageSizeByLayout();
+  const pageSize = getReplyExpandedPageSize();
   const totalPages = Math.ceil(getReplyListTotal(comment) / pageSize);
   if (comment.currentReplyPage && comment.currentReplyPage < totalPages) {
     comment.currentReplyPage++;
@@ -987,9 +995,9 @@ const getDisplayedReplies = (comment: Comment) => {
   if (!comment.replies) return [];
 
   if (!comment.showAllReplies) {
-    return comment.replies.slice(0, getReplyPageSizeByLayout());
+    return comment.replies.slice(0, getReplyPreviewSize());
   }
-  const pageSize = getReplyPageSizeByLayout();
+  const pageSize = getReplyExpandedPageSize();
   const page = comment.currentReplyPage || 1;
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
@@ -997,7 +1005,7 @@ const getDisplayedReplies = (comment: Comment) => {
 };
 
 const getTotalReplyPages = (comment: Comment) => {
-  const pageSize = getReplyPageSizeByLayout();
+  const pageSize = getReplyExpandedPageSize();
   return Math.ceil(getReplyListTotal(comment) / pageSize);
 };
 

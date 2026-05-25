@@ -386,7 +386,7 @@ void [
                 </div>
               </div>
 
-              <!-- 展开/收起回复：默认 3 条，超出显示「共 X 条回复，点击查看」 -->
+              <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
               <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
                 <!-- 未展开时显示提示 -->
                 <span
@@ -905,7 +905,7 @@ void [
                       </div>
                     </div>
 
-                    <!-- 展开/收起回复：默认 3 条，超出显示「共 X 条回复，点击查看」 -->
+                    <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
                     <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
                       <!-- 未展开时显示提示 -->
                       <span
