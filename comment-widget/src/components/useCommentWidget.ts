@@ -639,7 +639,6 @@ function countMoreMenuRows(comment: Comment): number {
   if (props.isNodeAdmin) n += 1;
   if (showReportInMoreMenuFor(comment)) n += 1;
   if (props.isNodeAdmin && !comment.isBlocked) n += 1;
-  if (props.isNodeAdmin && comment.isBlocked) n += 1;
   return n;
 }
 
