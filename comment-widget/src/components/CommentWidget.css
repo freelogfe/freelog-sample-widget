@@ -218,6 +218,27 @@
   padding: 10px;
 }
 
+/**
+ * 已屏蔽：除「点击查看」「收起」「取消屏蔽」外统一 opacity: 0.4
+ */
+.comment-main.comment-blocked .avatar,
+.comment-main.comment-blocked .comment-header,
+.comment-main.comment-blocked .blocked-text,
+.comment-main.comment-blocked .comment-actions > .time,
+.comment-main.comment-blocked .comment-actions > .action-button {
+  opacity: 0.4;
+}
+
+.comment-main.comment-blocked .view-link,
+.comment-main.comment-blocked .collapse-link,
+.comment-main.comment-blocked .comment-actions > .action {
+  opacity: 1;
+}
+
+.comment-main.comment-blocked .comment-text-body {
+  opacity: 0.4;
+}
+
 .comment-body {
   flex: 1;
   display: flex;

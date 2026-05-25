@@ -113,7 +113,7 @@ void [
         <!-- 评论列表 -->
         <div ref="commentListRef" class="comment-list">
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
-            <div class="comment-main">
+            <div class="comment-main" :class="{ 'comment-blocked': comment.isBlocked }">
               <div class="avatar" :style="commentAvatarStyle(comment)"></div>
               <div class="comment-body">
                 <div class="comment-header">
@@ -226,7 +226,10 @@ void [
                   :key="reply.id"
                   class="comment-item reply-item"
                 >
-                  <div class="comment-main">
+                  <div
+                    class="comment-main"
+                    :class="{ 'comment-blocked': reply.isBlocked || comment.isBlocked }"
+                  >
                     <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
                     <div class="comment-body">
                       <div class="comment-header">
@@ -243,7 +246,9 @@ void [
                           <span v-if="reply.replyTo" class="username">{{ reply.replyTo }}</span>
                         </div>
                       </div>
-                      <div class="comment-content-text">{{ reply.content }}</div>
+                      <div class="comment-content-text">
+                        <span class="comment-text-body">{{ reply.content }}</span>
+                      </div>
                       <div class="comment-actions">
                         <span class="time">{{ reply.time }}</span>
 
@@ -535,7 +540,7 @@ void [
               <!-- 评论列表 -->
               <div ref="drawerListRef" class="comment-list">
                 <div v-for="comment in comments" :key="comment.id" class="comment-item">
-                  <div class="comment-main">
+                  <div class="comment-main" :class="{ 'comment-blocked': comment.isBlocked }">
                     <div class="avatar" :style="commentAvatarStyle(comment)"></div>
                     <div class="comment-body">
                       <div class="comment-header">
@@ -656,7 +661,10 @@ void [
                         :key="reply.id"
                         class="comment-item reply-item"
                       >
-                        <div class="comment-main">
+                        <div
+                          class="comment-main"
+                          :class="{ 'comment-blocked': reply.isBlocked || comment.isBlocked }"
+                        >
                           <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
                           <div class="comment-body">
                             <div class="comment-header">
@@ -675,7 +683,9 @@ void [
                                 }}</span>
                               </div>
                             </div>
-                            <div class="comment-content-text">{{ reply.content }}</div>
+                            <div class="comment-content-text">
+                              <span class="comment-text-body">{{ reply.content }}</span>
+                            </div>
                             <div class="comment-actions">
                               <span class="time">{{ reply.time }}</span>
 
