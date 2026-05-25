@@ -149,7 +149,7 @@ void [
                   </template>
                   <template v-else>
                     <template v-if="comment.isBlocked">
-                      <span class="blocked-content blocked-expanded-text">{{
+                      <span class="comment-text-body blocked-content blocked-expanded-text">{{
                         comment.content
                       }}</span>
                       <button
@@ -160,7 +160,7 @@ void [
                         收起
                       </button>
                     </template>
-                    <span v-else>{{ comment.content }}</span>
+                    <span v-else class="comment-text-body">{{ comment.content }}</span>
                   </template>
                 </div>
 
@@ -670,7 +670,7 @@ void [
                         </template>
                         <template v-else>
                           <template v-if="comment.isBlocked">
-                            <span class="blocked-content blocked-expanded-text">{{
+                            <span class="comment-text-body blocked-content blocked-expanded-text">{{
                               comment.content
                             }}</span>
                             <button
@@ -681,7 +681,7 @@ void [
                               收起
                             </button>
                           </template>
-                          <span v-else>{{ comment.content }}</span>
+                          <span v-else class="comment-text-body">{{ comment.content }}</span>
                         </template>
                       </div>
 

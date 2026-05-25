@@ -300,6 +300,16 @@
   word-break: break-word;
 }
 
+.comment-text-body,
+.comment-content-text .blocked-content,
+.comment-content-text .blocked-expanded-text {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 .comment-content-text.blocked {
   display: flex;
   gap: 10px;
