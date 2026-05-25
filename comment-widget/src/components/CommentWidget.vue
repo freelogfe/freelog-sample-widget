@@ -173,6 +173,13 @@ void [
                     </svg>
                   </div>
 
+                  <span
+                    v-if="comment.isBlocked && comment.isExpanded && isNodeAdmin"
+                    class="action"
+                    @click="handleUnblock(comment)"
+                    >取消屏蔽</span
+                  >
+
                   <div
                     v-if="commentHasMoreMenuActions(comment)"
                     class="action-button more"
@@ -184,13 +191,6 @@ void [
                       <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                     </svg>
                   </div>
-
-                  <span
-                    v-if="comment.isBlocked && comment.isExpanded && isNodeAdmin"
-                    class="action"
-                    @click="handleUnblock(comment)"
-                    >取消屏蔽</span
-                  >
                 </div>
               </div>
             </div>
@@ -316,6 +316,13 @@ void [
                           </svg>
                         </div>
 
+                        <span
+                          v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
+                          class="action"
+                          @click="handleUnblock(reply)"
+                          >取消屏蔽</span
+                        >
+
                         <div
                           v-if="commentHasMoreMenuActions(reply)"
                           class="action-button more"
@@ -327,13 +334,6 @@ void [
                             <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                           </svg>
                         </div>
-
-                        <span
-                          v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
-                          class="action"
-                          @click="handleUnblock(reply)"
-                          >取消屏蔽</span
-                        >
                       </div>
                     </div>
                   </div>
@@ -683,6 +683,13 @@ void [
                           </svg>
                         </div>
 
+                        <span
+                          v-if="comment.isBlocked && comment.isExpanded && isNodeAdmin"
+                          class="action"
+                          @click="handleUnblock(comment)"
+                          >取消屏蔽</span
+                        >
+
                         <div
                           v-if="commentHasMoreMenuActions(comment)"
                           class="action-button more"
@@ -694,13 +701,6 @@ void [
                             <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                           </svg>
                         </div>
-
-                        <span
-                          v-if="comment.isBlocked && comment.isExpanded && isNodeAdmin"
-                          class="action"
-                          @click="handleUnblock(comment)"
-                          >取消屏蔽</span
-                        >
                       </div>
                     </div>
                   </div>
@@ -828,6 +828,13 @@ void [
                                 </svg>
                               </div>
 
+                              <span
+                                v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
+                                class="action"
+                                @click="handleUnblock(reply)"
+                                >取消屏蔽</span
+                              >
+
                               <div
                                 v-if="commentHasMoreMenuActions(reply)"
                                 class="action-button more"
@@ -839,13 +846,6 @@ void [
                                   <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                                 </svg>
                               </div>
-
-                              <span
-                                v-if="reply.isBlocked && reply.isExpanded && isNodeAdmin"
-                                class="action"
-                                @click="handleUnblock(reply)"
-                                >取消屏蔽</span
-                              >
                             </div>
                           </div>
                         </div>
