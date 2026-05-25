@@ -56,6 +56,8 @@ export interface Comment {
   isBlocked?: boolean;
   isExpanded?: boolean;
   replyTo?: string;
+  /** 被回复用户角色（创作者 / 策展人） */
+  replyToUserRole?: "curator" | "creator";
   replies?: Comment[];
   totalReplies?: number;
   showAllReplies?: boolean;
@@ -251,32 +253,62 @@ function rootNeedsSubReplyPage(item: CommentThreadItem): boolean {
   return n >= MAIN_LIST_EMBEDDED_REPLY_CAP;
 }
 
-/** 后端无 userRole：用 articleUserId / nodeUserId 与评论 userId 推断；两者同时命中时创作者优先 */
-function inferCommentUserRole(item: CommentThreadItem): Comment["userRole"] {
-  const uid = item.userId;
-  if (uid == null || Number.isNaN(Number(uid))) return undefined;
-  const u = Number(uid);
+/** 用展品 articleUserId / nodeUserId 与目标 userId 推断创作者或策展人 */
+function inferUserRoleFromExhibit(
+  userId: number | undefined,
+  articleUserId?: number,
+  nodeUserId?: number
+): Comment["userRole"] {
+  if (userId == null || Number.isNaN(Number(userId))) return undefined;
+  const u = Number(userId);
 
-  const articleUid = item.articleUserId;
-  if (articleUid != null && !Number.isNaN(Number(articleUid)) && Number(articleUid) === u) {
+  if (articleUserId != null && !Number.isNaN(Number(articleUserId)) && Number(articleUserId) === u) {
     return "creator";
   }
 
-  const nodeUid = item.nodeUserId;
-  if (nodeUid != null && !Number.isNaN(Number(nodeUid)) && Number(nodeUid) === u) {
+  if (nodeUserId != null && !Number.isNaN(Number(nodeUserId)) && Number(nodeUserId) === u) {
     return "curator";
   }
 
   return undefined;
 }
 
-function mapThreadToComment(item: CommentThreadItem, isRootThread = true): Comment {
+/** 后端无 userRole：用 articleUserId / nodeUserId 与评论 userId 推断；两者同时命中时创作者优先 */
+function inferCommentUserRole(item: CommentThreadItem): Comment["userRole"] {
+  return inferUserRoleFromExhibit(item.userId, item.articleUserId, item.nodeUserId);
+}
+
+function findUserIdInThread(node: CommentThreadItem, username: string): number | undefined {
+  if (String(node.username ?? "") === username && node.userId != null) {
+    return node.userId;
+  }
+  for (const child of node.replies ?? []) {
+    const found = findUserIdInThread(child, username);
+    if (found != null) return found;
+  }
+  return undefined;
+}
+
+function mapThreadToComment(
+  item: CommentThreadItem,
+  isRootThread = true,
+  threadRoot?: CommentThreadItem
+): Comment {
   const id = String(item.id ?? item._id ?? "");
-  const children = (item.replies ?? []).map(ch => mapThreadToComment(ch, false));
+  const root = threadRoot ?? item;
+  const children = (item.replies ?? []).map(ch => mapThreadToComment(ch, false, root));
   const replyTo =
     item.recipientInfo?.username != null && String(item.recipientInfo.username).trim()
       ? String(item.recipientInfo.username)
       : undefined;
+  const recipientUserId =
+    item.recipientInfo?.userId ??
+    (replyTo ? findUserIdInThread(root, replyTo) : undefined);
+  const replyToUserRole = inferUserRoleFromExhibit(
+    recipientUserId,
+    root.articleUserId,
+    root.nodeUserId
+  );
   return {
     id,
     username: String(item.username ?? ""),
@@ -288,6 +320,7 @@ function mapThreadToComment(item: CommentThreadItem, isRootThread = true): Comme
     isLiked: item.isLike,
     isBlocked: item.status === "blocked",
     replyTo,
+    replyToUserRole,
     replies: children.length ? children : undefined,
     totalReplies: children.length,
     showAllReplies: false,

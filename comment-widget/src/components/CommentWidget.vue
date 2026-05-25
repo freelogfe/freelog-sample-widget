@@ -273,6 +273,13 @@ void [
                           </span>
                           <span v-if="reply.replyTo" class="reply-to">回复</span>
                           <span v-if="reply.replyTo" class="username">{{ reply.replyTo }}</span>
+                          <span
+                            v-if="reply.replyToUserRole"
+                            class="user-role"
+                            :style="{ background: roleColors[reply.replyToUserRole] }"
+                          >
+                            {{ roleNames[reply.replyToUserRole] }}
+                          </span>
                         </div>
                       </div>
                       <div
@@ -802,6 +809,13 @@ void [
                                 <span v-if="reply.replyTo" class="username">{{
                                   reply.replyTo
                                 }}</span>
+                                <span
+                                  v-if="reply.replyToUserRole"
+                                  class="user-role"
+                                  :style="{ background: roleColors[reply.replyToUserRole] }"
+                                >
+                                  {{ roleNames[reply.replyToUserRole] }}
+                                </span>
                               </div>
                             </div>
                             <div
