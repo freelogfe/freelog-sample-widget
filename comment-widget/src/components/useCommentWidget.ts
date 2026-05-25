@@ -629,8 +629,9 @@ function commentIsOwnByViewer(comment: Comment): boolean {
   return Number(vid) === Number(aid);
 }
 
-/** 「更多」里是否展示举报（不能举报本人评论） */
+/** 「更多」里是否展示举报（不能举报本人评论；已屏蔽的评论不展示举报） */
 function showReportInMoreMenuFor(comment: Comment): boolean {
+  if (comment.isBlocked) return false;
   return !commentIsOwnByViewer(comment);
 }
 
