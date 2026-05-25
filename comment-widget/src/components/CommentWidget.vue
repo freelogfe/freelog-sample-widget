@@ -150,7 +150,10 @@ void [
                   </template>
                 </div>
 
-                <div class="comment-actions">
+                <div
+                  v-if="!comment.isBlocked || comment.isExpanded"
+                  class="comment-actions"
+                >
                   <span class="time">{{ comment.time }}</span>
 
                   <div class="action-button" @click="toggleLike(comment)">
@@ -249,7 +252,10 @@ void [
                       <div class="comment-content-text">
                         <span class="comment-text-body">{{ reply.content }}</span>
                       </div>
-                      <div class="comment-actions">
+                      <div
+                        v-if="!comment.isBlocked || comment.isExpanded"
+                        class="comment-actions"
+                      >
                         <span class="time">{{ reply.time }}</span>
 
                         <div class="action-button" @click="toggleLike(reply)">
@@ -579,7 +585,10 @@ void [
                         </template>
                       </div>
 
-                      <div class="comment-actions">
+                      <div
+                        v-if="!comment.isBlocked || comment.isExpanded"
+                        class="comment-actions"
+                      >
                         <span class="time">{{ comment.time }}</span>
 
                         <div class="action-button" @click="toggleLike(comment)">
@@ -686,7 +695,10 @@ void [
                             <div class="comment-content-text">
                               <span class="comment-text-body">{{ reply.content }}</span>
                             </div>
-                            <div class="comment-actions">
+                            <div
+                              v-if="!comment.isBlocked || comment.isExpanded"
+                              class="comment-actions"
+                            >
                               <span class="time">{{ reply.time }}</span>
 
                               <div class="action-button" @click="toggleLike(reply)">
