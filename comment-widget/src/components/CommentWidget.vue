@@ -197,7 +197,11 @@ void [
 
             <!-- 主评论的回复输入框 -->
             <div
-              v-if="comment.showReplyInput && replyingTo"
+              v-if="
+                comment.showReplyInput &&
+                replyingTo &&
+                (!comment.isBlocked || comment.isExpanded)
+              "
               class="reply-input-section"
               :data-reply-to="replyingTo.id"
             >
@@ -221,8 +225,15 @@ void [
               </div>
             </div>
 
-            <!-- 回复列表 -->
-            <div v-if="comment.replies && comment.replies.length > 0" class="replies-section">
+            <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（含节点商） -->
+            <div
+              v-if="
+                comment.replies &&
+                comment.replies.length > 0 &&
+                (!comment.isBlocked || comment.isExpanded)
+              "
+              class="replies-section"
+            >
               <div class="replies">
                 <div
                   v-for="reply in getDisplayedReplies(comment)"
@@ -638,7 +649,11 @@ void [
 
                   <!-- 主评论的回复输入框 -->
                   <div
-                    v-if="comment.showReplyInput && replyingTo"
+                    v-if="
+                      comment.showReplyInput &&
+                      replyingTo &&
+                      (!comment.isBlocked || comment.isExpanded)
+                    "
                     class="reply-input-section"
                     :data-reply-to="replyingTo.id"
                   >
@@ -662,8 +677,15 @@ void [
                     </div>
                   </div>
 
-                  <!-- 回复列表 -->
-                  <div v-if="comment.replies && comment.replies.length > 0" class="replies-section">
+                  <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（含节点商） -->
+                  <div
+                    v-if="
+                      comment.replies &&
+                      comment.replies.length > 0 &&
+                      (!comment.isBlocked || comment.isExpanded)
+                    "
+                    class="replies-section"
+                  >
                     <div class="replies">
                       <div
                         v-for="reply in getDisplayedReplies(comment)"
