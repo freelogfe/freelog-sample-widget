@@ -788,8 +788,8 @@
   outline: none;
 }
 
-/* 垂直模式的举报成功提示 */
-.report-success {
+/* 全局操作成功提示（删除成功等） */
+.comment-widget-toast {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -798,17 +798,16 @@
   border-radius: 4px;
   font-size: 14px;
   line-height: 20px;
-  z-index: 3001;
+  z-index: 10001;
+  pointer-events: none;
 }
 
-/* 亮色模式 */
-.comment-widget.theme-light .report-success {
+.comment-widget.theme-light .comment-widget-toast {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
 }
 
-/* 暗黑模式 */
-.comment-widget.theme-dark .report-success {
+.comment-widget.theme-dark .comment-widget-toast {
   background: rgba(255, 255, 255, 0.6);
   color: #222;
 }

@@ -184,6 +184,17 @@ const commentsHasMore = computed(
 const publishSubmitting = ref(false);
 const blockSubmitting = ref(false);
 const deleteSubmitting = ref(false);
+const actionToastMessage = ref("");
+let actionToastTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showActionToast(message: string, durationMs = 2000) {
+  if (actionToastTimer) clearTimeout(actionToastTimer);
+  actionToastMessage.value = message;
+  actionToastTimer = setTimeout(() => {
+    actionToastMessage.value = "";
+    actionToastTimer = null;
+  }, durationMs);
+}
 
 function formatCommentTime(iso: string | undefined): string {
   if (!iso?.trim()) return "";
@@ -813,6 +824,7 @@ const handleDelete = async (comment: Comment) => {
     } else {
       removeCommentFromTree(id);
     }
+    showActionToast("删除成功");
   } catch (e) {
     alert(e instanceof Error ? e.message : "网络错误，请稍后重试");
   } finally {
@@ -1314,6 +1326,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  if (actionToastTimer) clearTimeout(actionToastTimer);
   window.removeEventListener("scroll", handleScroll, passiveScroll);
   window.removeEventListener("scroll", closeMoreMenuOnScroll, passiveScroll);
   window.removeEventListener("resize", handleScroll);
@@ -1350,6 +1363,7 @@ onUnmounted(() => {
     publishSubmitting,
     blockSubmitting,
     deleteSubmitting,
+    actionToastMessage,
     handleLogin,
     handlePublish,
     handleReply,

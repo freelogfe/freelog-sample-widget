@@ -38,6 +38,7 @@ const {
   publishSubmitting,
   blockSubmitting,
   deleteSubmitting,
+  actionToastMessage,
   handleLogin,
   handlePublish,
   handleReply,
@@ -1076,6 +1077,11 @@ void [
           </div>
         </Transition>
       </div>
+    </Transition>
+
+    <!-- 操作成功提示（删除等） -->
+    <Transition name="fade">
+      <div v-if="actionToastMessage" class="comment-widget-toast">{{ actionToastMessage }}</div>
     </Transition>
   </div>
 </template>
