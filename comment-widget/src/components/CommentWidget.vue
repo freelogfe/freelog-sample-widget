@@ -45,6 +45,8 @@ const {
   toggleLike,
   hasLikeCount,
   commentHasMoreMenuActions,
+  canLikeComment,
+  canReplyToComment,
   showReportInMoreMenuFor,
   toggleMoreMenu,
   closeMoreMenu,
@@ -170,7 +172,7 @@ void [
                 >
                   <span class="time">{{ comment.time }}</span>
 
-                  <div class="action-button" @click="toggleLike(comment)">
+                  <div v-if="canLikeComment(comment)" class="action-button" @click="toggleLike(comment)">
                     <img v-if="comment.isLiked" :src="iconLikeFull" width="14" height="14" alt="" />
                     <LikeIconOutline v-else />
                     <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
@@ -178,7 +180,7 @@ void [
                     }}</span>
                   </div>
 
-                  <div class="action-button" @click="handleReply(comment)">
+                  <div v-if="canReplyToComment(comment)" class="action-button" @click="handleReply(comment)">
                     <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
                       <path
                         d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
@@ -323,7 +325,7 @@ void [
                       >
                         <span class="time">{{ reply.time }}</span>
 
-                        <div class="action-button" @click="toggleLike(reply)">
+                        <div v-if="canLikeComment(reply)" class="action-button" @click="toggleLike(reply)">
                           <img
                             v-if="reply.isLiked"
                             :src="iconLikeFull"
@@ -337,7 +339,11 @@ void [
                           }}</span>
                         </div>
 
-                        <div class="action-button" @click="handleReply(reply, comment)">
+                        <div
+                          v-if="canReplyToComment(reply)"
+                          class="action-button"
+                          @click="handleReply(reply, comment)"
+                        >
                           <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
                             <path
                               d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
@@ -698,7 +704,7 @@ void [
                       >
                         <span class="time">{{ comment.time }}</span>
 
-                        <div class="action-button" @click="toggleLike(comment)">
+                        <div v-if="canLikeComment(comment)" class="action-button" @click="toggleLike(comment)">
                           <img
                             v-if="comment.isLiked"
                             :src="iconLikeFull"
@@ -712,7 +718,7 @@ void [
                           }}</span>
                         </div>
 
-                        <div class="action-button" @click="handleReply(comment)">
+                        <div v-if="canReplyToComment(comment)" class="action-button" @click="handleReply(comment)">
                           <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
                             <path
                               d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
@@ -859,7 +865,7 @@ void [
                             >
                               <span class="time">{{ reply.time }}</span>
 
-                              <div class="action-button" @click="toggleLike(reply)">
+                              <div v-if="canLikeComment(reply)" class="action-button" @click="toggleLike(reply)">
                                 <img
                                   v-if="reply.isLiked"
                                   :src="iconLikeFull"
@@ -873,7 +879,11 @@ void [
                                 }}</span>
                               </div>
 
-                              <div class="action-button" @click="handleReply(reply, comment)">
+                              <div
+                          v-if="canReplyToComment(reply)"
+                          class="action-button"
+                          @click="handleReply(reply, comment)"
+                        >
                                 <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
                                   <path
                                     d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"

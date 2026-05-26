@@ -522,6 +522,7 @@ const handlePublish = async () => {
 };
 
 const handleReply = (comment: Comment, parentComment?: Comment) => {
+  if (!canReplyToComment(comment)) return;
   // 如果点击的是同一个评论的回复按钮，则取消回复
   if (replyingTo.value && replyingTo.value.id === comment.id) {
     cancelReply();
@@ -612,6 +613,7 @@ const likeSubmittingIds = ref<Set<string>>(new Set());
 
 /** 点赞 / 取消点赞 */
 const toggleLike = async (comment: Comment) => {
+  if (!canLikeComment(comment)) return;
   if (!props.isLoggedIn) {
     props.onLogin?.();
     return;
@@ -687,6 +689,16 @@ function countMoreMenuRows(comment: Comment): number {
 
 function commentHasMoreMenuActions(comment: Comment): boolean {
   return countMoreMenuRows(comment) > 0;
+}
+
+/** 节点商不可对已屏蔽评论点赞 */
+function canLikeComment(comment: Comment): boolean {
+  return !(props.isNodeAdmin && comment.isBlocked);
+}
+
+/** 节点商不可对已屏蔽评论回复 */
+function canReplyToComment(comment: Comment): boolean {
+  return !(props.isNodeAdmin && comment.isBlocked);
 }
 
 const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
@@ -1346,6 +1358,8 @@ onUnmounted(() => {
     toggleLike,
     hasLikeCount,
     commentHasMoreMenuActions,
+    canLikeComment,
+    canReplyToComment,
     showReportInMoreMenuFor,
     toggleMoreMenu,
     closeMoreMenu,
