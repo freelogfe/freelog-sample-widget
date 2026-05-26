@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import iconLikeFull from "@/assets/icon-like-full.svg";
 import LikeIconOutline from "./LikeIconOutline.vue";
+import ReportPanelContent from "./ReportPanelContent.vue";
 import { useCommentWidget, type CommentWidgetProps } from "./useCommentWidget";
 
 const props = withDefaults(defineProps<CommentWidgetProps>(), {
@@ -1033,93 +1034,17 @@ void [
               </div>
             </Transition>
 
-            <!-- 抽屉内的举报弹窗 -->
+            <!-- 抽屉内的举报面板 -->
             <Transition name="fade">
               <div v-if="showReportDialog" class="drawer-report-panel" @click.stop>
-                <div class="report-header">
-                  <h3>举报</h3>
-                  <div class="button-group">
-                    <button class="btn btn-secondary" @click="closeReportDialog">取消</button>
-                    <button
-                      class="btn btn-primary"
-                      :disabled="reportSubmitting || reportSuccess"
-                      @click="submitReport"
-                    >
-                      提交
-                    </button>
-                  </div>
-                </div>
-
-                <div class="report-content">
-                  <div
-                    class="report-option"
-                    :class="{ active: reportReason === 'spam' }"
-                    @click="reportReason = 'spam'"
-                  >
-                    <span>垃圾内容或违规商业推广</span>
-                    <div class="radio" :class="{ checked: reportReason === 'spam' }">
-                      <div v-if="reportReason === 'spam'" class="radio-dot"></div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="report-option"
-                    :class="{ active: reportReason === 'violence' }"
-                    @click="reportReason = 'violence'"
-                  >
-                    <span>色情、暴力</span>
-                    <div class="radio" :class="{ checked: reportReason === 'violence' }">
-                      <div v-if="reportReason === 'violence'" class="radio-dot"></div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="report-option"
-                    :class="{ active: reportReason === 'harassment' }"
-                    @click="reportReason = 'harassment'"
-                  >
-                    <span>骚扰、欺诈</span>
-                    <div class="radio" :class="{ checked: reportReason === 'harassment' }">
-                      <div v-if="reportReason === 'harassment'" class="radio-dot"></div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="report-option"
-                    :class="{ active: reportReason === 'false' }"
-                    @click="reportReason = 'false'"
-                  >
-                    <span>不实信息</span>
-                    <div class="radio" :class="{ checked: reportReason === 'false' }">
-                      <div v-if="reportReason === 'false'" class="radio-dot"></div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="report-option"
-                    :class="{ active: reportReason === 'other' }"
-                    @click="reportReason = 'other'"
-                  >
-                    <span>其他</span>
-                    <div class="radio" :class="{ checked: reportReason === 'other' }">
-                      <div v-if="reportReason === 'other'" class="radio-dot"></div>
-                    </div>
-                  </div>
-
-                  <template v-if="reportReason === 'other'">
-                    <p class="hint">请填写举报理由（必填）</p>
-                    <textarea
-                      v-model="reportDetail"
-                      class="report-detail"
-                      placeholder="请详细描述..."
-                    ></textarea>
-                  </template>
-                </div>
-
-                <!-- 抽屉内的举报成功提示 -->
-                <Transition name="fade">
-                  <div v-if="reportSuccess" class="drawer-report-success">举报已受理</div>
-                </Transition>
+                <ReportPanelContent
+                  v-model:report-reason="reportReason"
+                  v-model:report-detail="reportDetail"
+                  :report-submitting="reportSubmitting"
+                  :report-success="reportSuccess"
+                  @cancel="closeReportDialog"
+                  @submit="submitReport"
+                />
               </div>
             </Transition>
           </div>
@@ -1127,103 +1052,30 @@ void [
       </Transition>
     </template>
 
-    <!-- 垂直模式的举报弹窗 -->
+    <!-- 垂直模式：右侧抽屉式举报面板（与抽屉模式一致） -->
     <Transition name="fade">
       <div
         v-if="showReportDialog && layout === 'vertical'"
-        class="report-overlay"
+        class="report-overlay report-overlay--drawer"
         @click="closeReportDialog"
       >
-        <div class="report-dialog" @click.stop>
-          <div class="report-header">
-            <h3>举报</h3>
-            <div class="button-group">
-              <button class="btn btn-secondary" @click="closeReportDialog">取消</button>
-              <button
-                class="btn btn-primary"
-                :disabled="reportSubmitting || reportSuccess"
-                @click="submitReport"
-              >
-                提交
-              </button>
-            </div>
-          </div>
-
+        <Transition name="report-panel-slide">
           <div
-            class="report-content"
-            :class="{ 'report-content--other': reportReason === 'other' }"
+            v-if="showReportDialog"
+            class="drawer-report-panel drawer-report-panel--viewport"
+            @click.stop
           >
-            <div
-              class="report-option"
-              :class="{ active: reportReason === 'spam' }"
-              @click="reportReason = 'spam'"
-            >
-              <span>垃圾内容或违规商业推广</span>
-              <div class="radio" :class="{ checked: reportReason === 'spam' }">
-                <div v-if="reportReason === 'spam'" class="radio-dot"></div>
-              </div>
-            </div>
-
-            <div
-              class="report-option"
-              :class="{ active: reportReason === 'violence' }"
-              @click="reportReason = 'violence'"
-            >
-              <span>色情、暴力</span>
-              <div class="radio" :class="{ checked: reportReason === 'violence' }">
-                <div v-if="reportReason === 'violence'" class="radio-dot"></div>
-              </div>
-            </div>
-
-            <div
-              class="report-option"
-              :class="{ active: reportReason === 'harassment' }"
-              @click="reportReason = 'harassment'"
-            >
-              <span>骚扰、欺诈</span>
-              <div class="radio" :class="{ checked: reportReason === 'harassment' }">
-                <div v-if="reportReason === 'harassment'" class="radio-dot"></div>
-              </div>
-            </div>
-
-            <div
-              class="report-option"
-              :class="{ active: reportReason === 'false' }"
-              @click="reportReason = 'false'"
-            >
-              <span>不实信息</span>
-              <div class="radio" :class="{ checked: reportReason === 'false' }">
-                <div v-if="reportReason === 'false'" class="radio-dot"></div>
-              </div>
-            </div>
-
-            <div
-              class="report-option"
-              :class="{ active: reportReason === 'other' }"
-              @click="reportReason = 'other'"
-            >
-              <span>其他</span>
-              <div class="radio" :class="{ checked: reportReason === 'other' }">
-                <div v-if="reportReason === 'other'" class="radio-dot"></div>
-              </div>
-            </div>
-
-            <template v-if="reportReason === 'other'">
-              <p class="hint">请填写举报理由（必填）</p>
-              <textarea
-                v-model="reportDetail"
-                class="report-detail"
-                placeholder="请详细描述..."
-              ></textarea>
-            </template>
+            <ReportPanelContent
+              v-model:report-reason="reportReason"
+              v-model:report-detail="reportDetail"
+              :report-submitting="reportSubmitting"
+              :report-success="reportSuccess"
+              @cancel="closeReportDialog"
+              @submit="submitReport"
+            />
           </div>
-        </div>
+        </Transition>
       </div>
-    </Transition>
-
-    <!-- 垂直模式的举报成功提示 -->
-    <Transition name="fade">
-      <div v-if="reportSuccess && layout === 'vertical'" class="report-success">举报已受理</div>
     </Transition>
   </div>
 </template>

@@ -13,6 +13,7 @@
 /* 亮色主题 */
 .theme-light {
   --bg-primary: #ffffff;
+  /* --bg-color: #ffffff; */
   --text-primary: #222222;
   --text-secondary: #999999;
   --border-color: #e4e7eb;
@@ -22,6 +23,7 @@
 /* 暗黑主题 */
 .theme-dark {
   --bg-primary: #222222;
+  /* --bg-color: #222222; */
   --text-primary: #ffffff;
   --text-secondary: #999999;
   --border-color: rgba(255, 255, 255, 0.2);
@@ -621,6 +623,12 @@
   z-index: 3000;
 }
 
+/* 垂直模式右侧抽屉式举报：面板贴右，勿居中 */
+.report-overlay--drawer {
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
 .report-dialog {
   width: 700px;
   max-height: 900px;
@@ -795,13 +803,13 @@
 
 /* 亮色模式 */
 .comment-widget.theme-light .report-success {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
 }
 
 /* 暗黑模式 */
 .comment-widget.theme-dark .report-success {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
   color: #222;
 }
 
@@ -818,6 +826,27 @@
   flex-direction: column;
   z-index: 100;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 垂直模式：固定于视口右侧的抽屉式举报面板 */
+.drawer-report-panel--viewport {
+  position: fixed;
+  z-index: 3001;
+}
+
+.report-panel-slide-enter-active,
+.report-panel-slide-leave-active {
+  transition: transform 0.25s ease;
+}
+
+.report-panel-slide-enter-from,
+.report-panel-slide-leave-to {
+  transform: translateX(100%);
+}
+
+.report-panel-slide-enter-to,
+.report-panel-slide-leave-from {
+  transform: translateX(0);
 }
 
 .drawer-report-panel .report-header {
@@ -999,13 +1028,13 @@
 
 /* 亮色模式 */
 .comment-widget.theme-light .drawer-report-success {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
 }
 
 /* 暗黑模式 */
 .comment-widget.theme-dark .drawer-report-success {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
   color: #222;
 }
 
