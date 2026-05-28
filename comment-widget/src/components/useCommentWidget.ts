@@ -37,6 +37,8 @@ export interface CommentWidgetProps {
   textPrimary?: string;
   /** 第二层级文字色：时间、次信息、弱化说明*/
   textSecondary?: string;
+  /** 边框色，与宿主 --border-color 同步 */
+  borderColor?: string;
 }
 
 export interface Comment {
@@ -87,6 +89,7 @@ const hostSurfaceStyle = computed(() => {
   if (props.pageBackground) s.background = props.pageBackground;
   if (props.textPrimary) s["--text-primary"] = props.textPrimary;
   if (props.textSecondary) s["--text-secondary"] = props.textSecondary;
+  if (props.borderColor) s["--border-color"] = props.borderColor;
   return Object.keys(s).length ? s : undefined;
 });
 

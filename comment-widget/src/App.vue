@@ -11,6 +11,7 @@ const onLoginRef = ref<(() => void) | undefined>();
 const pageBackground = ref<string | undefined>();
 const textPrimary = ref<string | undefined>();
 const textSecondary = ref<string | undefined>();
+const borderColor = ref<string | undefined>();
 const exhibitId = ref<string | undefined>();
 const itemId = ref<string | undefined>();
 const avatarUrl = ref<string | undefined>();
@@ -67,6 +68,12 @@ function applyWidgetData(data: Record<string, unknown> | null | undefined) {
     textSecondary.value =
       typeof data.textSecondary === "string" && data.textSecondary.trim()
         ? data.textSecondary.trim()
+        : undefined;
+  }
+  if ("borderColor" in data) {
+    borderColor.value =
+      typeof data.borderColor === "string" && data.borderColor.trim()
+        ? data.borderColor.trim()
         : undefined;
   }
   if ("avatarUrl" in data) {
@@ -148,6 +155,7 @@ onBeforeMount(() => {
       :page-background="pageBackground"
       :text-primary="textPrimary"
       :text-secondary="textSecondary"
+      :border-color="borderColor"
     />
   </div>
 </template>
