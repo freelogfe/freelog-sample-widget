@@ -1370,6 +1370,7 @@ onUnmounted(() => {
     drawerListRef,
     drawerBodyRef,
     rootLoadMoreSentinelRef,
+    commentsLoading,
     commentsLoadingMore,
     commentsHasMore,
     publishSubmitting,

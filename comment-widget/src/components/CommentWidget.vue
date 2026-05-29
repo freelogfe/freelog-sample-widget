@@ -33,6 +33,7 @@ const {
   drawerListRef,
   drawerBodyRef,
   rootLoadMoreSentinelRef,
+  commentsLoading,
   commentsLoadingMore,
   commentsHasMore,
   publishSubmitting,
@@ -122,7 +123,16 @@ void [
         </div>
 
         <!-- 评论列表 -->
-        <div ref="commentListRef" class="comment-list">
+        <div
+          ref="commentListRef"
+          class="comment-list"
+          :class="{ 'comment-list--empty': !commentsLoading && comments.length === 0 }"
+        >
+          <div v-if="commentsLoading" class="comments-status">加载中…</div>
+          <div v-else-if="comments.length === 0" class="no-data">
+            <div class="no-data-text">暂无评论</div>
+          </div>
+          <template v-else>
           <div v-for="comment in comments" :key="comment.id" class="comment-item">
             <div class="comment-main" :class="{ 'comment-blocked': comment.isBlocked }">
               <div class="avatar" :style="commentAvatarStyle(comment)"></div>
@@ -467,6 +477,7 @@ void [
               >没有更多了</span
             >
           </div>
+          </template>
         </div>
       </div>
     </div>
@@ -652,7 +663,16 @@ void [
               </div>
 
               <!-- 评论列表 -->
-              <div ref="drawerListRef" class="comment-list">
+              <div
+                ref="drawerListRef"
+                class="comment-list"
+                :class="{ 'comment-list--empty': !commentsLoading && comments.length === 0 }"
+              >
+                <div v-if="commentsLoading" class="comments-status">加载中…</div>
+                <div v-else-if="comments.length === 0" class="no-data">
+                  <div class="no-data-text">暂无评论</div>
+                </div>
+                <template v-else>
                 <div v-for="comment in comments" :key="comment.id" class="comment-item">
                   <div class="comment-main" :class="{ 'comment-blocked': comment.isBlocked }">
                     <div class="avatar" :style="commentAvatarStyle(comment)"></div>
@@ -1001,6 +1021,7 @@ void [
                     </div>
                   </div>
                 </div>
+                </template>
               </div>
               <div ref="rootLoadMoreSentinelRef" class="comment-root-load-more-tail">
                 <span v-if="commentsLoadingMore" class="root-loading-more">加载中…</span>
