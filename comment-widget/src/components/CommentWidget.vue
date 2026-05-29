@@ -49,6 +49,7 @@ const {
   commentHasMoreMenuActions,
   canLikeComment,
   canReplyToComment,
+  canDeleteComment,
   showReportInMoreMenuFor,
   toggleMoreMenu,
   closeMoreMenu,
@@ -515,7 +516,7 @@ void [
           @click.stop
         >
           <div
-            v-if="menuTargetComment && isNodeAdmin"
+            v-if="menuTargetComment && canDeleteComment(menuTargetComment)"
             class="menu-item"
             :class="{ 'is-disabled': blockSubmitting || deleteSubmitting }"
             @click="handleDelete(menuTargetComment)"

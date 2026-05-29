@@ -689,10 +689,17 @@ function resolvedViewerUserId(): number | undefined {
 }
 
 function commentIsOwnByViewer(comment: Comment): boolean {
-  const vid = resolvedViewerUserId() ;
+  const vid = resolvedViewerUserId();
   const aid = comment.userId;
   if (vid == null || aid == null) return false;
   return Number(vid) === Number(aid);
+}
+
+/** 节点商可删任意评论；发布者可删自己的评论 */
+function canDeleteComment(comment: Comment): boolean {
+  if (!props.isLoggedIn) return false;
+  if (props.isNodeAdmin) return true;
+  return commentIsOwnByViewer(comment);
 }
 
 /** 「更多」里是否展示举报（不能举报本人评论；已屏蔽的评论不展示举报） */
@@ -703,7 +710,7 @@ function showReportInMoreMenuFor(comment: Comment): boolean {
 
 function countMoreMenuRows(comment: Comment): number {
   let n = 0;
-  if (props.isNodeAdmin) n += 1;
+  if (canDeleteComment(comment)) n += 1;
   if (showReportInMoreMenuFor(comment)) n += 1;
   if (props.isNodeAdmin && !comment.isBlocked) n += 1;
   return n;
@@ -815,7 +822,7 @@ const menuTargetComment = computed(() => {
 });
 
 const handleDelete = async (comment: Comment) => {
-  if (!props.isNodeAdmin) return;
+  if (!canDeleteComment(comment)) return;
   if (deleteSubmitting.value || blockSubmitting.value) return;
   const id = comment.id?.trim();
   if (!id) return;
@@ -1379,6 +1386,7 @@ onUnmounted(() => {
     commentHasMoreMenuActions,
     canLikeComment,
     canReplyToComment,
+    canDeleteComment,
     showReportInMoreMenuFor,
     toggleMoreMenu,
     closeMoreMenu,
