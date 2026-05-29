@@ -177,6 +177,14 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => props.layout === "drawer" && drawerVisible.value,
+  open => {
+    document.documentElement.classList.toggle("comment-drawer-open", open);
+  },
+  { immediate: true }
+);
+
 const commentsLoading = ref(false);
 /** 一级评论列表分页：接口 totalItem */
 const commentRootTotal = ref(0);
@@ -1330,6 +1338,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (actionToastTimer) clearTimeout(actionToastTimer);
+  document.documentElement.classList.remove("comment-drawer-open");
   window.removeEventListener("scroll", handleScroll, passiveScroll);
   window.removeEventListener("scroll", closeMoreMenuOnScroll, passiveScroll);
   window.removeEventListener("resize", handleScroll);

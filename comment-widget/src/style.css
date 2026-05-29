@@ -8,11 +8,25 @@ html {
   min-height: 100%;
 }
 
+html,
+body,
+#comment-widget-app,
+#comment-widget-container {
+  height: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+/* 抽屉打开时禁止 iframe 文档滚动，评论只在 .drawer-body 内滚 */
+html.comment-drawer-open,
+html.comment-drawer-open body {
+  overflow: hidden;
+  height: 100%;
 }
 
 :root {

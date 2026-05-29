@@ -1118,6 +1118,7 @@
   z-index: 2000;
   display: flex;
   justify-content: flex-end;
+  overflow: hidden;
 }
 
 /* 抽屉内容 */
@@ -1125,7 +1126,8 @@
   position: relative;
   width: 700px;
   max-width: 90vw;
-  height: 100vh;
+  height: 100%;
+  max-height: 100vh;
   background: var(--bg-color);
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -1177,10 +1179,13 @@
   color: var(--text-primary);
 }
 
-/* 抽屉主体 */
+/* 抽屉主体：仅此区域滚动 */
 .drawer-body {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 20px;
   padding-bottom: 100px; /* 为悬浮输入框留出空间 */
   background: var(--bg-color);
