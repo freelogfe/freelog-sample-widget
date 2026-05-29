@@ -917,9 +917,9 @@ const REPLY_PREVIEW_SIZE_VERTICAL = 3;
 /** 展开回复后每页条数（垂直 / 抽屉一致） */
 const REPLY_PAGE_SIZE_EXPANDED = 10;
 
-/** 折叠预览：垂直 3 条，抽屉 10 条 */
+/** 折叠预览：垂直 / 抽屉均为 3 条 */
 function getReplyPreviewSize(): number {
-  return props.layout === "vertical" ? REPLY_PREVIEW_SIZE_VERTICAL : REPLY_PAGE_SIZE_EXPANDED;
+  return REPLY_PREVIEW_SIZE_VERTICAL;
 }
 
 function getReplyExpandedPageSize(): number {
