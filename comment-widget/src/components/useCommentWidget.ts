@@ -868,13 +868,9 @@ const handleBlock = async (comment: Comment) => {
       return;
     }
     closeMoreMenu();
-    const exhibitId = props.exhibitId?.trim();
-    if (exhibitId) {
-      await syncCommentsFromApi(exhibitId);
-    } else {
-      comment.isBlocked = true;
-      comment.isExpanded = false;
-    }
+    const target = findCommentById(comment.id) ?? comment;
+    target.isBlocked = true;
+    target.isExpanded = false;
   } catch (e) {
     alert(e instanceof Error ? e.message : "网络错误，请稍后重试");
   } finally {
@@ -894,12 +890,9 @@ const handleUnblock = async (comment: Comment) => {
       return;
     }
     closeMoreMenu();
-    const exhibitId = props.exhibitId?.trim();
-    if (exhibitId) {
-      await syncCommentsFromApi(exhibitId);
-    } else {
-      comment.isBlocked = false;
-    }
+    const target = findCommentById(comment.id) ?? comment;
+    target.isBlocked = false;
+    target.isExpanded = false;
   } catch (e) {
     alert(e instanceof Error ? e.message : "网络错误，请稍后重试");
   } finally {
