@@ -851,6 +851,10 @@ const handleDelete = async (comment: Comment) => {
 };
 
 const handleReport = () => {
+  if (!props.isLoggedIn) {
+    props.onLogin?.();
+    return;
+  }
   const c = menuTargetComment.value;
   if (!c || !showReportInMoreMenuFor(c)) return;
   const id = c.id?.trim() || null;
