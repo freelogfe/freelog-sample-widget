@@ -545,6 +545,10 @@ const handlePublish = async () => {
 
 const handleReply = (comment: Comment, parentComment?: Comment) => {
   if (!canReplyToComment(comment)) return;
+  if (!props.isLoggedIn) {
+    props.onLogin?.();
+    return;
+  }
   // 如果点击的是同一个评论的回复按钮，则取消回复
   if (replyingTo.value && replyingTo.value.id === comment.id) {
     cancelReply();
