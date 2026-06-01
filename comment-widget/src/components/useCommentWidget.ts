@@ -97,6 +97,7 @@ const drawerVisible = ref(false);
 const commentInput = ref("");
 const replyingTo = ref<Comment | null>(null);
 const comments = ref<Comment[]>([]);
+const visibleComments = computed(() => comments.value.filter(isCommentVisibleToViewer));
 
 // 更多菜单相关
 const showMoreMenu = ref<string | null>(null);
@@ -699,6 +700,40 @@ function commentIsOwnByViewer(comment: Comment): boolean {
   return Number(vid) === Number(aid);
 }
 
+/** 是否展示「已屏蔽」视觉：仅节点商可见，发布者本人无感 */
+function shouldShowBlockedUI(comment: Comment): boolean {
+  return !!(comment.isBlocked && props.isNodeAdmin && !commentIsOwnByViewer(comment));
+}
+
+/** 子评论是否因父评论被屏蔽而呈现屏蔽态（父评论发布者看自己线程时无感） */
+function shouldInheritParentBlockedUI(parentComment: Comment): boolean {
+  return shouldShowBlockedUI(parentComment);
+}
+
+/** 当前浏览者是否能看到该评论（被屏蔽时：发布者无感可见，节点商可见，其他用户不可见） */
+function isCommentVisibleToViewer(comment: Comment): boolean {
+  if (!comment.isBlocked) return true;
+  if (commentIsOwnByViewer(comment)) return true;
+  if (props.isNodeAdmin) return true;
+  return false;
+}
+
+function getVisibleReplies(comment: Comment): Comment[] {
+  if (!comment.replies) return [];
+  return comment.replies.filter(r => isCommentVisibleToViewer(r));
+}
+
+function hasVisibleReplies(comment: Comment): boolean {
+  return getVisibleReplies(comment).length > 0;
+}
+
+/** 父评论被屏蔽且未展开时，节点商不展示子评论区 */
+function shouldShowRepliesSection(comment: Comment): boolean {
+  if (!hasVisibleReplies(comment)) return false;
+  if (!shouldShowBlockedUI(comment)) return true;
+  return !!comment.isExpanded;
+}
+
 /** 节点商可删任意评论；发布者可删自己的评论 */
 function canDeleteComment(comment: Comment): boolean {
   if (!props.isLoggedIn) return false;
@@ -946,14 +981,17 @@ function getReplyPageSize(comment: Comment): number {
   return comment.showAllReplies ? getReplyExpandedPageSize() : getReplyPreviewSize();
 }
 
-/** 回复条数：优先接口 total，并与已加载列表取较大值，避免只拉了前几条但总数更大时不显示「展开」 */
+/** 回复条数：节点商用接口 total；其他角色只计当前可见回复 */
 function getReplyListTotal(comment: Comment): number {
   const loaded = comment.replies?.length ?? 0;
   const reported = comment.totalReplies;
-  if (reported != null && reported > 0) {
-    return Math.max(reported, loaded);
+  if (props.isNodeAdmin) {
+    if (reported != null && reported > 0) {
+      return Math.max(reported, loaded);
+    }
+    return loaded;
   }
-  return loaded;
+  return getVisibleReplies(comment).length;
 }
 
 /** 当前 UI 展示所需的最少已加载子评论数（折叠=第 1 页，展开=当前页及之前） */
@@ -1054,7 +1092,7 @@ async function fetchMoreSubRepliesIfNeeded(comment: Comment): Promise<void> {
 
 function shouldShowReplyExpandControl(comment: Comment): boolean {
   const pageSize = getReplyPreviewSize();
-  return (comment.replies?.length ?? 0) > 0 && getReplyListTotal(comment) > pageSize;
+  return hasVisibleReplies(comment) && getReplyListTotal(comment) > pageSize;
 }
 
 const toggleReplies = (comment: Comment) => {
@@ -1083,16 +1121,17 @@ const nextReplyPage = (comment: Comment) => {
 };
 
 const getDisplayedReplies = (comment: Comment) => {
-  if (!comment.replies) return [];
+  const visible = getVisibleReplies(comment);
+  if (!visible.length) return [];
 
   if (!comment.showAllReplies) {
-    return comment.replies.slice(0, getReplyPreviewSize());
+    return visible.slice(0, getReplyPreviewSize());
   }
   const pageSize = getReplyExpandedPageSize();
   const page = comment.currentReplyPage || 1;
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  return comment.replies.slice(startIndex, endIndex);
+  return visible.slice(startIndex, endIndex);
 };
 
 const getTotalReplyPages = (comment: Comment) => {
@@ -1372,6 +1411,7 @@ onUnmounted(() => {
     COMMENT_MAX_LENGTH,
     replyingTo,
     comments,
+    visibleComments,
     showMoreMenu,
     moreMenuPosition,
     showReportDialog,
@@ -1404,6 +1444,9 @@ onUnmounted(() => {
     canLikeComment,
     canReplyToComment,
     canDeleteComment,
+    shouldShowBlockedUI,
+    shouldInheritParentBlockedUI,
+    shouldShowRepliesSection,
     showReportInMoreMenuFor,
     toggleMoreMenu,
     closeMoreMenu,
