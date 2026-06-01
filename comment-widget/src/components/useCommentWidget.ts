@@ -544,7 +544,7 @@ const handlePublish = async () => {
 };
 
 const handleReply = (comment: Comment, parentComment?: Comment) => {
-  if (!canReplyToComment(comment)) return;
+  if (!canReplyToComment(comment, parentComment)) return;
   if (!props.isLoggedIn) {
     props.onLogin?.();
     return;
@@ -638,8 +638,8 @@ const cancelReply = () => {
 const likeSubmittingIds = ref<Set<string>>(new Set());
 
 /** 点赞 / 取消点赞 */
-const toggleLike = async (comment: Comment) => {
-  if (!canLikeComment(comment)) return;
+const toggleLike = async (comment: Comment, parentComment?: Comment) => {
+  if (!canLikeComment(comment, parentComment)) return;
   if (!props.isLoggedIn) {
     props.onLogin?.();
     return;
@@ -724,14 +724,22 @@ function commentHasMoreMenuActions(comment: Comment): boolean {
   return countMoreMenuRows(comment) > 0;
 }
 
+/** 节点商不可对已屏蔽评论（含父评论已屏蔽时的子评论）点赞/回复 */
+function isBlockedForNodeAdminInteraction(
+  comment: Comment,
+  parentComment?: Comment
+): boolean {
+  return !!(comment.isBlocked || parentComment?.isBlocked);
+}
+
 /** 节点商不可对已屏蔽评论点赞 */
-function canLikeComment(comment: Comment): boolean {
-  return !(props.isNodeAdmin && comment.isBlocked);
+function canLikeComment(comment: Comment, parentComment?: Comment): boolean {
+  return !(props.isNodeAdmin && isBlockedForNodeAdminInteraction(comment, parentComment));
 }
 
 /** 节点商不可对已屏蔽评论回复 */
-function canReplyToComment(comment: Comment): boolean {
-  return !(props.isNodeAdmin && comment.isBlocked);
+function canReplyToComment(comment: Comment, parentComment?: Comment): boolean {
+  return !(props.isNodeAdmin && isBlockedForNodeAdminInteraction(comment, parentComment));
 }
 
 const toggleMoreMenu = (commentId: string, event: MouseEvent) => {
