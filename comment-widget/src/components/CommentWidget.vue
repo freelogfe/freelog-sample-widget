@@ -338,7 +338,7 @@ void [
                       >
                         <span class="time">{{ reply.time }}</span>
 
-                        <div v-if="canLikeComment(reply)" class="action-button" @click="toggleLike(reply)">
+                        <div v-if="canLikeComment(reply, comment)" class="action-button" @click="toggleLike(reply, comment)">
                           <img
                             v-if="reply.isLiked"
                             :src="iconLikeFull"
@@ -353,7 +353,7 @@ void [
                         </div>
 
                         <div
-                          v-if="canReplyToComment(reply)"
+                          v-if="canReplyToComment(reply, comment)"
                           class="action-button"
                           @click="handleReply(reply, comment)"
                         >
@@ -888,7 +888,7 @@ void [
                             >
                               <span class="time">{{ reply.time }}</span>
 
-                              <div v-if="canLikeComment(reply)" class="action-button" @click="toggleLike(reply)">
+                              <div v-if="canLikeComment(reply, comment)" class="action-button" @click="toggleLike(reply, comment)">
                                 <img
                                   v-if="reply.isLiked"
                                   :src="iconLikeFull"
@@ -903,7 +903,7 @@ void [
                               </div>
 
                               <div
-                          v-if="canReplyToComment(reply)"
+                          v-if="canReplyToComment(reply, comment)"
                           class="action-button"
                           @click="handleReply(reply, comment)"
                         >
