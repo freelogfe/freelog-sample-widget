@@ -1397,10 +1397,13 @@
   opacity: 1;
 }
 
-/* 抽屉滑入动画 */
-.slide-right-enter-active,
-.slide-right-leave-active {
+/* 抽屉滑入动画（关闭时无动画，立即消失） */
+.slide-right-enter-active {
   transition: all 0.3s ease;
+}
+
+.slide-right-leave-active {
+  transition: none;
 }
 
 .slide-right-enter-from .drawer-content,
