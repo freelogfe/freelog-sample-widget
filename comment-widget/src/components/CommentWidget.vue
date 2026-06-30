@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import iconLikeFull from "@/assets/icon-like-full.svg";
+import LikeIconFull from "./LikeIconFull.vue";
 import LikeIconOutline from "./LikeIconOutline.vue";
 import ReportPanelContent from "./ReportPanelContent.vue";
 import { useCommentWidget, type CommentWidgetProps } from "./useCommentWidget";
@@ -189,8 +189,13 @@ void [
                 >
                   <span class="time">{{ comment.time }}</span>
 
-                  <div v-if="canLikeComment(comment)" class="action-button" @click="toggleLike(comment)">
-                    <img v-if="comment.isLiked" :src="iconLikeFull" width="14" height="14" alt="" />
+                  <div
+                    v-if="canLikeComment(comment)"
+                    class="action-button"
+                    :class="{ 'is-liked': comment.isLiked }"
+                    @click="toggleLike(comment)"
+                  >
+                    <LikeIconFull v-if="comment.isLiked" />
                     <LikeIconOutline v-else />
                     <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
                       comment.likes
@@ -338,14 +343,13 @@ void [
                       >
                         <span class="time">{{ reply.time }}</span>
 
-                        <div v-if="canLikeComment(reply, comment)" class="action-button" @click="toggleLike(reply, comment)">
-                          <img
-                            v-if="reply.isLiked"
-                            :src="iconLikeFull"
-                            width="14"
-                            height="14"
-                            alt=""
-                          />
+                        <div
+                          v-if="canLikeComment(reply, comment)"
+                          class="action-button"
+                          :class="{ 'is-liked': reply.isLiked }"
+                          @click="toggleLike(reply, comment)"
+                        >
+                          <LikeIconFull v-if="reply.isLiked" />
                           <LikeIconOutline v-else />
                           <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
                             reply.likes
@@ -727,14 +731,13 @@ void [
                       >
                         <span class="time">{{ comment.time }}</span>
 
-                        <div v-if="canLikeComment(comment)" class="action-button" @click="toggleLike(comment)">
-                          <img
-                            v-if="comment.isLiked"
-                            :src="iconLikeFull"
-                            width="14"
-                            height="14"
-                            alt=""
-                          />
+                        <div
+                          v-if="canLikeComment(comment)"
+                          class="action-button"
+                          :class="{ 'is-liked': comment.isLiked }"
+                          @click="toggleLike(comment)"
+                        >
+                          <LikeIconFull v-if="comment.isLiked" />
                           <LikeIconOutline v-else />
                           <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
                             comment.likes
@@ -884,14 +887,13 @@ void [
                             >
                               <span class="time">{{ reply.time }}</span>
 
-                              <div v-if="canLikeComment(reply, comment)" class="action-button" @click="toggleLike(reply, comment)">
-                                <img
-                                  v-if="reply.isLiked"
-                                  :src="iconLikeFull"
-                                  width="14"
-                                  height="14"
-                                  alt=""
-                                />
+                              <div
+                                v-if="canLikeComment(reply, comment)"
+                                class="action-button"
+                                :class="{ 'is-liked': reply.isLiked }"
+                                @click="toggleLike(reply, comment)"
+                              >
+                                <LikeIconFull v-if="reply.isLiked" />
                                 <LikeIconOutline v-else />
                                 <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
                                   reply.likes

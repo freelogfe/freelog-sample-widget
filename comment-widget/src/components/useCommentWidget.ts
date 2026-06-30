@@ -33,6 +33,7 @@ export interface CommentWidgetProps {
   isLoggedIn?: boolean;
   /** 宿主页背景（如音乐主题 --bg-color），与评论区底色一致 */
   pageBackground?: string;
+  pageColor?: string;
   /** 第一层级文字色：标题、正文、主按钮文案等 */
   textPrimary?: string;
   /** 第二层级文字色：时间、次信息、弱化说明*/
@@ -87,6 +88,7 @@ const verticalContainerWidth = computed(() => {
 const hostSurfaceStyle = computed(() => {
   const s: Record<string, string> = {};
   if (props.pageBackground) s.background = props.pageBackground;
+  if (props.pageColor) s["--page-color"] = props.pageColor;
   if (props.textPrimary) s["--text-primary"] = props.textPrimary;
   if (props.textSecondary) s["--text-secondary"] = props.textSecondary;
   if (props.borderColor) s["--border-color"] = props.borderColor;
@@ -1224,7 +1226,7 @@ const submitReport = async () => {
 
 const roleColors = {
   curator: "#BEBEBE",
-  creator: "#2784FF"
+  creator: props.pageColor
 };
 
 const roleNames = {
