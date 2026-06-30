@@ -99,6 +99,12 @@ void [
     <!-- 垂直模式 -->
     <div v-if="layout === 'vertical'" class="vertical-container">
       <div class="comment-content">
+
+        <!-- 评论标题 -->
+        <div class="comment-title">
+          <span>评论</span>
+        </div>
+        
         <!-- 未登录提示 -->
         <div v-if="!isLoggedIn" class="login-prompt">
           <span>游客身份，登录后发布评论</span>
