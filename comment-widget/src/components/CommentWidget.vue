@@ -112,9 +112,9 @@ void [
         </div>
 
         <!-- 评论输入框 (已登录) - 仅用于发布新评论 -->
-        <div v-if="isLoggedIn && !replyingTo" ref="inputContainerRef" class="comment-input-section">
+        <div v-if="!replyingTo" ref="inputContainerRef" class="comment-input-section">
           <div class="avatar">
-            <img :src="avatarUrl" alt="avatar" />
+            <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
           </div>
           <div class="input-box">
             <textarea
@@ -649,12 +649,12 @@ void [
 
               <!-- 评论输入框 (已登录) - 仅用于发布新评论 -->
               <div
-                v-if="isLoggedIn && !replyingTo"
+                v-if="!replyingTo"
                 ref="drawerInputRef"
                 class="comment-input-section"
               >
                 <div class="avatar">
-                  <img :src="avatarUrl" alt="avatar" />
+                  <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
                 </div>
                 <div class="input-box">
                   <textarea
