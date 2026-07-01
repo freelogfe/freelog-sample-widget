@@ -122,6 +122,7 @@ void [
               :maxlength="COMMENT_MAX_LENGTH"
               placeholder="写下你的评论..."
             ></textarea>
+            <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
             <button
               class="btn-publish"
               :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -259,6 +260,7 @@ void [
                   :placeholder="`回复@${replyingTo.username}：`"
                   @keydown.enter.ctrl="handlePublish"
                 ></textarea>
+                <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                 <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                 <button
                   class="btn-publish"
@@ -416,6 +418,7 @@ void [
                         :placeholder="`回复@${replyingTo.username}：`"
                         @keydown.enter.ctrl="handlePublish"
                       ></textarea>
+                      <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                       <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                       <button
                         class="btn-publish"
@@ -508,6 +511,7 @@ void [
               :maxlength="COMMENT_MAX_LENGTH"
               placeholder="写下你的评论..."
             ></textarea>
+          <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
           <button
             class="btn-publish"
             :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -662,6 +666,7 @@ void [
                     :maxlength="COMMENT_MAX_LENGTH"
                     placeholder="写下你的评论..."
                   ></textarea>
+                  <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                   <button
                     class="btn-publish"
                     :class="{ disabled: !commentInput.trim() || publishSubmitting }"
@@ -801,6 +806,7 @@ void [
                         :placeholder="`回复@${replyingTo.username}：`"
                         @keydown.enter.ctrl="handlePublish"
                       ></textarea>
+                      <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                       <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                       <button
                         class="btn-publish"
@@ -960,6 +966,7 @@ void [
                               :placeholder="`回复@${replyingTo.username}：`"
                               @keydown.enter.ctrl="handlePublish"
                             ></textarea>
+                            <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                             <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                             <button
                               class="btn-publish"
@@ -1050,6 +1057,7 @@ void [
               :maxlength="COMMENT_MAX_LENGTH"
               placeholder="写下你的评论..."
             ></textarea>
+                  <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                   <button
                     class="btn-publish"
                     :class="{ disabled: !commentInput.trim() || publishSubmitting }"
