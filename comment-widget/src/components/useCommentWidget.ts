@@ -504,6 +504,12 @@ function clearAllReplyInputs() {
 }
 
 const handlePublish = async () => {
+
+  if (!props.isLoggedIn) {
+    props.onLogin?.();
+    return;
+  }
+  
   const text = commentInput.value.trim();
   if (!text || publishSubmitting.value) return;
   if (text.length > COMMENT_MAX_LENGTH) {
