@@ -101,12 +101,11 @@ void [
     <!-- 垂直模式 -->
     <div v-if="layout === 'vertical'" class="vertical-container">
       <div class="comment-content">
-
         <!-- 评论标题 -->
         <div class="comment-title">
           <span>评论</span>
         </div>
-        
+
         <!-- 未登录提示 -->
         <div v-if="!isLoggedIn" class="login-prompt">
           <span>游客身份，登录后发布评论</span>
@@ -146,367 +145,363 @@ void [
             <div class="no-data-text">暂无评论</div>
           </div>
           <template v-else>
-          <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
-            <div
-              class="comment-main"
-              :class="{
-                'comment-blocked': shouldShowBlockedUI(comment),
-                'comment-blocked--expanded': shouldShowBlockedUI(comment) && comment.isExpanded
-              }"
-            >
-              <div class="avatar" :style="commentAvatarStyle(comment)"></div>
-              <div class="comment-body">
-                <div class="comment-header">
-                  <div class="user-info">
-                    <span class="username">{{ comment.username }}</span>
-                    <span
-                      v-if="comment.userRole"
-                      class="user-role"
-                      :style="{ background: roleColors[comment.userRole] }"
+            <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
+              <div
+                class="comment-main"
+                :class="{
+                  'comment-blocked': shouldShowBlockedUI(comment),
+                  'comment-blocked--expanded': shouldShowBlockedUI(comment) && comment.isExpanded
+                }"
+              >
+                <div class="avatar" :style="commentAvatarStyle(comment)"></div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <div class="user-info">
+                      <span class="username">{{ comment.username }}</span>
+                      <span
+                        v-if="comment.userRole"
+                        class="user-role"
+                        :style="{ background: roleColors[comment.userRole] }"
+                      >
+                        {{ roleNames[comment.userRole] }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="comment-content-text"
+                    :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
+                  >
+                    <div
+                      v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
+                      class="blocked-status-row"
                     >
-                      {{ roleNames[comment.userRole] }}
-                    </span>
+                      <BlockedWarningIcon />
+                      <span class="blocked-text">该评论已屏蔽</span>
+                      <span class="view-link" @click="toggleBlockedComment(comment)">点击查看</span>
+                    </div>
+                    <span v-else class="comment-text-body">{{ comment.content }}</span>
                   </div>
-                </div>
-
-                <div
-                  class="comment-content-text"
-                  :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
-                >
-                  <div
-                    v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
-                    class="blocked-status-row"
-                  >
-                    <BlockedWarningIcon />
-                    <span class="blocked-text">该评论已屏蔽</span>
-                    <span class="view-link" @click="toggleBlockedComment(comment)">点击查看</span>
-                  </div>
-                  <span v-else class="comment-text-body">{{ comment.content }}</span>
-                </div>
-
-                <div
-                  v-if="!shouldShowBlockedUI(comment) || comment.isExpanded"
-                  class="comment-actions"
-                >
-                  <span class="time">{{ comment.time }}</span>
 
                   <div
-                    v-if="canLikeComment(comment)"
-                    class="action-button"
-                    :class="{ 'is-liked': comment.isLiked }"
-                    @click="toggleLike(comment)"
+                    v-if="!shouldShowBlockedUI(comment) || comment.isExpanded"
+                    class="comment-actions"
                   >
-                    <LikeIconFull v-if="comment.isLiked" />
-                    <LikeIconOutline v-else />
-                    <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
-                      comment.likes
-                    }}</span>
-                  </div>
+                    <span class="time">{{ comment.time }}</span>
 
-                  <div v-if="canReplyToComment(comment)" class="action-button" @click="handleReply(comment)">
-                    <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
-                      <path
-                        d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </div>
+                    <div
+                      v-if="canLikeComment(comment)"
+                      class="action-button"
+                      :class="{ 'is-liked': comment.isLiked }"
+                      @click="toggleLike(comment)"
+                    >
+                      <LikeIconFull v-if="comment.isLiked" />
+                      <LikeIconOutline v-else />
+                      <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
+                        comment.likes
+                      }}</span>
+                    </div>
 
-                  <span
-                    v-if="shouldShowBlockedUI(comment) && comment.isExpanded && isNodeAdmin"
-                    class="action"
-                    @click="handleUnblock(comment)"
-                    >取消屏蔽</span
-                  >
+                    <div
+                      v-if="canReplyToComment(comment)"
+                      class="action-button"
+                      @click="handleReply(comment)"
+                    >
+                      <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
+                        <path
+                          d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+
+                    <span
+                      v-if="shouldShowBlockedUI(comment) && comment.isExpanded && isNodeAdmin"
+                      class="action"
+                      @click="handleUnblock(comment)"
+                      >取消屏蔽</span
+                    >
+
+                    <div
+                      v-if="commentHasMoreMenuActions(comment)"
+                      class="action-button more"
+                      @click="toggleMoreMenu(comment.id, $event)"
+                    >
+                      <svg width="14" height="3" viewBox="0 0 14 3">
+                        <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
+                        <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
+                        <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
+                      </svg>
+                    </div>
+                  </div>
 
                   <div
-                    v-if="commentHasMoreMenuActions(comment)"
-                    class="action-button more"
-                    @click="toggleMoreMenu(comment.id, $event)"
+                    v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
+                    class="blocked-footer"
                   >
-                    <svg width="14" height="3" viewBox="0 0 14 3">
-                      <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                      <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
-                      <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
-                    </svg>
+                    <div class="blocked-footer-status">
+                      <BlockedWarningIcon :size="14" />
+                      <span class="blocked-text">该评论已屏蔽</span>
+                    </div>
+                    <button
+                      type="button"
+                      class="blocked-comment-collapse"
+                      @click="toggleBlockedComment(comment)"
+                    >
+                      收起
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <div
-                  v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
-                  class="blocked-footer"
-                >
-                  <div class="blocked-footer-status">
-                    <BlockedWarningIcon :size="14" />
-                    <span class="blocked-text">该评论已屏蔽</span>
-                  </div>
+              <!-- 主评论的回复输入框 -->
+              <div
+                v-if="
+                  comment.showReplyInput &&
+                  replyingTo &&
+                  (!shouldShowBlockedUI(comment) || comment.isExpanded)
+                "
+                class="reply-input-section"
+                :data-reply-to="replyingTo.id"
+              >
+                <div class="avatar small">
+                  <img :src="avatarUrl" alt="avatar" />
+                </div>
+                <div class="input-box">
+                  <textarea
+                    v-model="commentInput"
+                    :maxlength="COMMENT_MAX_LENGTH"
+                    :placeholder="`回复@${replyingTo.username}：`"
+                    @keydown.enter.ctrl="handlePublish"
+                  ></textarea>
+                  <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
+                  <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                   <button
-                    type="button"
-                    class="blocked-comment-collapse"
-                    @click="toggleBlockedComment(comment)"
+                    class="btn-publish"
+                    :class="{ disabled: !commentInput.trim() || publishSubmitting }"
+                    @click="handlePublish"
                   >
-                    收起
+                    发布
                   </button>
                 </div>
               </div>
-            </div>
 
-            <!-- 主评论的回复输入框 -->
-            <div
-              v-if="
-                comment.showReplyInput &&
-                replyingTo &&
-                (!shouldShowBlockedUI(comment) || comment.isExpanded)
-              "
-              class="reply-input-section"
-              :data-reply-to="replyingTo.id"
-            >
-              <div class="avatar small">
-                <img :src="avatarUrl" alt="avatar" />
-              </div>
-              <div class="input-box">
-                <textarea
-                  v-model="commentInput"
-                  :maxlength="COMMENT_MAX_LENGTH"
-                  :placeholder="`回复@${replyingTo.username}：`"
-                  @keydown.enter.ctrl="handlePublish"
-                ></textarea>
-                <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
-                <button class="btn-cancel-reply" @click="cancelReply">取消</button>
-                <button
-                  class="btn-publish"
-                  :class="{ disabled: !commentInput.trim() || publishSubmitting }"
-                  @click="handlePublish"
-                >
-                  发布
-                </button>
-              </div>
-            </div>
-
-            <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（仅节点商） -->
-            <div
-              v-if="shouldShowRepliesSection(comment)"
-              class="replies-section"
-            >
-              <div class="replies">
-                <div
-                  v-for="reply in getDisplayedReplies(comment)"
-                  :key="reply.id"
-                  class="comment-item reply-item"
-                >
+              <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（仅节点商） -->
+              <div v-if="shouldShowRepliesSection(comment)" class="replies-section">
+                <div class="replies">
                   <div
-                    class="comment-main"
-                    :class="{
-                      'comment-blocked':
-                        shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
-                      'comment-blocked--expanded':
-                        shouldShowBlockedUI(reply) && reply.isExpanded
-                    }"
+                    v-for="reply in getDisplayedReplies(comment)"
+                    :key="reply.id"
+                    class="comment-item reply-item"
                   >
-                    <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
-                    <div class="comment-body">
-                      <div class="comment-header">
-                        <div class="user-info">
-                          <span class="username">{{ reply.username }}</span>
+                    <div
+                      class="comment-main"
+                      :class="{
+                        'comment-blocked':
+                          shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
+                        'comment-blocked--expanded': shouldShowBlockedUI(reply) && reply.isExpanded
+                      }"
+                    >
+                      <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
+                      <div class="comment-body">
+                        <div class="comment-header">
+                          <div class="user-info">
+                            <span class="username">{{ reply.username }}</span>
+                            <span
+                              v-if="reply.userRole"
+                              class="user-role"
+                              :style="{ background: roleColors[reply.userRole] }"
+                            >
+                              {{ roleNames[reply.userRole] }}
+                            </span>
+                            <span v-if="reply.replyTo" class="reply-to">回复</span>
+                            <span v-if="reply.replyTo" class="username">{{ reply.replyTo }}</span>
+                            <span
+                              v-if="reply.replyToUserRole"
+                              class="user-role"
+                              :style="{ background: roleColors[reply.replyToUserRole] }"
+                            >
+                              {{ roleNames[reply.replyToUserRole] }}
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          class="comment-content-text"
+                          :class="{ blocked: shouldShowBlockedUI(reply) && !reply.isExpanded }"
+                        >
+                          <div
+                            v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
+                            class="blocked-status-row"
+                          >
+                            <BlockedWarningIcon />
+                            <span class="blocked-text">该评论已屏蔽</span>
+                            <span class="view-link" @click="toggleBlockedComment(reply)"
+                              >点击查看</span
+                            >
+                          </div>
+                          <span v-else class="comment-text-body">{{ reply.content }}</span>
+                        </div>
+                        <div
+                          v-if="
+                            (!shouldShowBlockedUI(comment) || comment.isExpanded) &&
+                            (!shouldShowBlockedUI(reply) || reply.isExpanded)
+                          "
+                          class="comment-actions"
+                        >
+                          <span class="time">{{ reply.time }}</span>
+
+                          <div
+                            v-if="canLikeComment(reply, comment)"
+                            class="action-button"
+                            :class="{ 'is-liked': reply.isLiked }"
+                            @click="toggleLike(reply, comment)"
+                          >
+                            <LikeIconFull v-if="reply.isLiked" />
+                            <LikeIconOutline v-else />
+                            <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
+                              reply.likes
+                            }}</span>
+                          </div>
+
+                          <div
+                            v-if="canReplyToComment(reply, comment)"
+                            class="action-button"
+                            @click="handleReply(reply, comment)"
+                          >
+                            <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
+                              <path
+                                d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </div>
+
                           <span
-                            v-if="reply.userRole"
-                            class="user-role"
-                            :style="{ background: roleColors[reply.userRole] }"
+                            v-if="shouldShowBlockedUI(reply) && reply.isExpanded && isNodeAdmin"
+                            class="action"
+                            @click="handleUnblock(reply)"
+                            >取消屏蔽</span
                           >
-                            {{ roleNames[reply.userRole] }}
-                          </span>
-                          <span v-if="reply.replyTo" class="reply-to">回复</span>
-                          <span v-if="reply.replyTo" class="username">{{ reply.replyTo }}</span>
-                          <span
-                            v-if="reply.replyToUserRole"
-                            class="user-role"
-                            :style="{ background: roleColors[reply.replyToUserRole] }"
+
+                          <div
+                            v-if="commentHasMoreMenuActions(reply)"
+                            class="action-button more"
+                            @click="toggleMoreMenu(reply.id, $event)"
                           >
-                            {{ roleNames[reply.replyToUserRole] }}
-                          </span>
+                            <svg width="14" height="3" viewBox="0 0 14 3">
+                              <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
+                              <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
+                              <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
+                            </svg>
+                          </div>
+                        </div>
+
+                        <div
+                          v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
+                          class="blocked-footer"
+                        >
+                          <div class="blocked-footer-status">
+                            <BlockedWarningIcon :size="14" />
+                            <span class="blocked-text">该评论已屏蔽</span>
+                          </div>
+                          <button
+                            type="button"
+                            class="blocked-comment-collapse"
+                            @click="toggleBlockedComment(reply)"
+                          >
+                            收起
+                          </button>
                         </div>
                       </div>
-                      <div
-                        class="comment-content-text"
-                        :class="{ blocked: shouldShowBlockedUI(reply) && !reply.isExpanded }"
-                      >
-                        <div
-                          v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
-                          class="blocked-status-row"
-                        >
-                          <BlockedWarningIcon />
-                          <span class="blocked-text">该评论已屏蔽</span>
-                          <span class="view-link" @click="toggleBlockedComment(reply)"
-                            >点击查看</span
-                          >
-                        </div>
-                        <span v-else class="comment-text-body">{{ reply.content }}</span>
+                    </div>
+
+                    <!-- 回复的回复输入框 -->
+                    <div
+                      v-if="
+                        reply.showReplyInput &&
+                        replyingTo &&
+                        (!shouldShowBlockedUI(reply) || reply.isExpanded)
+                      "
+                      class="reply-input-section nested"
+                    >
+                      <div class="avatar small">
+                        <img :src="avatarUrl" alt="avatar" />
                       </div>
-                      <div
-                        v-if="
-                          (!shouldShowBlockedUI(comment) || comment.isExpanded) &&
-                          (!shouldShowBlockedUI(reply) || reply.isExpanded)
-                        "
-                        class="comment-actions"
-                      >
-                        <span class="time">{{ reply.time }}</span>
-
-                        <div
-                          v-if="canLikeComment(reply, comment)"
-                          class="action-button"
-                          :class="{ 'is-liked': reply.isLiked }"
-                          @click="toggleLike(reply, comment)"
-                        >
-                          <LikeIconFull v-if="reply.isLiked" />
-                          <LikeIconOutline v-else />
-                          <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
-                            reply.likes
-                          }}</span>
-                        </div>
-
-                        <div
-                          v-if="canReplyToComment(reply, comment)"
-                          class="action-button"
-                          @click="handleReply(reply, comment)"
-                        >
-                          <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
-                            <path
-                              d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </div>
-
-                        <span
-                          v-if="shouldShowBlockedUI(reply) && reply.isExpanded && isNodeAdmin"
-                          class="action"
-                          @click="handleUnblock(reply)"
-                          >取消屏蔽</span
-                        >
-
-                        <div
-                          v-if="commentHasMoreMenuActions(reply)"
-                          class="action-button more"
-                          @click="toggleMoreMenu(reply.id, $event)"
-                        >
-                          <svg width="14" height="3" viewBox="0 0 14 3">
-                            <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                            <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
-                            <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      <div
-                        v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
-                        class="blocked-footer"
-                      >
-                        <div class="blocked-footer-status">
-                          <BlockedWarningIcon :size="14" />
-                          <span class="blocked-text">该评论已屏蔽</span>
-                        </div>
+                      <div class="input-box">
+                        <textarea
+                          v-model="commentInput"
+                          :maxlength="COMMENT_MAX_LENGTH"
+                          :placeholder="`回复@${replyingTo.username}：`"
+                          @keydown.enter.ctrl="handlePublish"
+                        ></textarea>
+                        <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
+                        <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                         <button
-                          type="button"
-                          class="blocked-comment-collapse"
-                          @click="toggleBlockedComment(reply)"
+                          class="btn-publish"
+                          :class="{ disabled: !commentInput.trim() || publishSubmitting }"
+                          @click="handlePublish"
                         >
-                          收起
+                          发布
                         </button>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <!-- 回复的回复输入框 -->
-                  <div
-                    v-if="
-                      reply.showReplyInput &&
-                      replyingTo &&
-                      (!shouldShowBlockedUI(reply) || reply.isExpanded)
-                    "
-                    class="reply-input-section nested"
+                <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
+                <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
+                  <!-- 未展开时显示提示 -->
+                  <span
+                    v-if="!comment.showAllReplies"
+                    class="toggle-link"
+                    @click="toggleReplies(comment)"
                   >
-                    <div class="avatar small">
-                      <img :src="avatarUrl" alt="avatar" />
-                    </div>
-                    <div class="input-box">
-                      <textarea
-                        v-model="commentInput"
-                        :maxlength="COMMENT_MAX_LENGTH"
-                        :placeholder="`回复@${replyingTo.username}：`"
-                        @keydown.enter.ctrl="handlePublish"
-                      ></textarea>
-                      <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
-                      <button class="btn-cancel-reply" @click="cancelReply">取消</button>
-                      <button
-                        class="btn-publish"
-                        :class="{ disabled: !commentInput.trim() || publishSubmitting }"
-                        @click="handlePublish"
+                    共{{ getReplyListTotal(comment) }}条回复，点击查看
+                  </span>
+                  <!-- 展开后显示分页 -->
+                  <template v-else>
+                    <span class="page-info"
+                      >共{{ getTotalReplyPages(comment) }}页
+                      {{ getReplyListTotal(comment) }}条回复</span
+                    >
+                    <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
+                    <template
+                      v-for="(item, index) in getReplyPageLinkItems(comment)"
+                      :key="item.type === 'page' ? `page-${item.page}` : `ellipsis-${index}`"
+                    >
+                      <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
+                      <span
+                        v-else
+                        class="page-link"
+                        :class="{
+                          active: (comment.currentReplyPage || 1) === item.page
+                        }"
+                        @click="changeReplyPage(comment, item.page)"
                       >
-                        发布
-                      </button>
-                    </div>
-                  </div>
+                        {{ item.page }}
+                      </span>
+                    </template>
+                    <span
+                      v-if="
+                        comment.currentReplyPage &&
+                        comment.currentReplyPage < getTotalReplyPages(comment)
+                      "
+                      class="page-link"
+                      @click="nextReplyPage(comment)"
+                    >
+                      下一页
+                    </span>
+                    <span class="page-link" @click="toggleReplies(comment)">收起</span>
+                  </template>
                 </div>
               </div>
-
-              <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
-              <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
-                <!-- 未展开时显示提示 -->
-                <span
-                  v-if="!comment.showAllReplies"
-                  class="toggle-link"
-                  @click="toggleReplies(comment)"
-                >
-                  共{{ getReplyListTotal(comment) }}条回复，点击查看
-                </span>
-                <!-- 展开后显示分页 -->
-                <template v-else>
-                  <span class="page-info"
-                    >共{{ getTotalReplyPages(comment) }}页
-                    {{ getReplyListTotal(comment) }}条回复</span
-                  >
-                  <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
-                  <template
-                    v-for="(item, index) in getReplyPageLinkItems(comment)"
-                    :key="
-                      item.type === 'page'
-                        ? `page-${item.page}`
-                        : `ellipsis-${index}`
-                    "
-                  >
-                    <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
-                    <span
-                      v-else
-                      class="page-link"
-                      :class="{
-                        active: (comment.currentReplyPage || 1) === item.page
-                      }"
-                      @click="changeReplyPage(comment, item.page)"
-                    >
-                      {{ item.page }}
-                    </span>
-                  </template>
-                  <span
-                    v-if="
-                      comment.currentReplyPage &&
-                      comment.currentReplyPage < getTotalReplyPages(comment)
-                    "
-                    class="page-link"
-                    @click="nextReplyPage(comment)"
-                  >
-                    下一页
-                  </span>
-                  <span class="page-link" @click="toggleReplies(comment)">收起</span>
-                </template>
-              </div>
             </div>
-          </div>
-          <div ref="rootLoadMoreSentinelRef" class="comment-root-load-more-tail">
-            <span v-if="commentsLoadingMore" class="root-loading-more">加载中…</span>
-            <span v-else-if="!commentsHasMore && comments.length > 0" class="root-no-more"
-              >没有更多了</span
-            >
-          </div>
+            <div ref="rootLoadMoreSentinelRef" class="comment-root-load-more-tail">
+              <span v-if="commentsLoadingMore" class="root-loading-more">加载中…</span>
+              <span v-else-if="!commentsHasMore && comments.length > 0" class="root-no-more"
+                >没有更多了</span
+              >
+            </div>
           </template>
         </div>
       </div>
@@ -524,10 +519,10 @@ void [
         </div>
         <div class="input-box">
           <textarea
-              v-model="commentInput"
-              :maxlength="COMMENT_MAX_LENGTH"
-              placeholder="写下你的评论..."
-            ></textarea>
+            v-model="commentInput"
+            :maxlength="COMMENT_MAX_LENGTH"
+            placeholder="写下你的评论..."
+          ></textarea>
           <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
           <button
             class="btn-publish"
@@ -669,11 +664,7 @@ void [
               </div>
 
               <!-- 评论输入框 (已登录) - 仅用于发布新评论 -->
-              <div
-                v-if="!replyingTo"
-                ref="drawerInputRef"
-                class="comment-input-section"
-              >
+              <div v-if="!replyingTo" ref="drawerInputRef" class="comment-input-section">
                 <div class="avatar">
                   <img v-if="avatarUrl" :src="avatarUrl" alt="avatar" />
                 </div>
@@ -705,365 +696,367 @@ void [
                   <div class="no-data-text">暂无评论</div>
                 </div>
                 <template v-else>
-                <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
-                  <div
-              class="comment-main"
-              :class="{
-                'comment-blocked': shouldShowBlockedUI(comment),
-                'comment-blocked--expanded': shouldShowBlockedUI(comment) && comment.isExpanded
-              }"
-            >
-                    <div class="avatar" :style="commentAvatarStyle(comment)"></div>
-                    <div class="comment-body">
-                      <div class="comment-header">
-                        <div class="user-info">
-                          <span class="username">{{ comment.username }}</span>
+                  <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
+                    <div
+                      class="comment-main"
+                      :class="{
+                        'comment-blocked': shouldShowBlockedUI(comment),
+                        'comment-blocked--expanded':
+                          shouldShowBlockedUI(comment) && comment.isExpanded
+                      }"
+                    >
+                      <div class="avatar" :style="commentAvatarStyle(comment)"></div>
+                      <div class="comment-body">
+                        <div class="comment-header">
+                          <div class="user-info">
+                            <span class="username">{{ comment.username }}</span>
+                            <span
+                              v-if="comment.userRole"
+                              class="user-role"
+                              :style="{ background: roleColors[comment.userRole] }"
+                            >
+                              {{ roleNames[comment.userRole] }}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div
+                          class="comment-content-text"
+                          :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
+                        >
+                          <div
+                            v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
+                            class="blocked-status-row"
+                          >
+                            <BlockedWarningIcon />
+                            <span class="blocked-text">该评论已屏蔽</span>
+                            <span class="view-link" @click="toggleBlockedComment(comment)"
+                              >点击查看</span
+                            >
+                          </div>
+                          <span v-else class="comment-text-body">{{ comment.content }}</span>
+                        </div>
+
+                        <div
+                          v-if="!shouldShowBlockedUI(comment) || comment.isExpanded"
+                          class="comment-actions"
+                        >
+                          <span class="time">{{ comment.time }}</span>
+
+                          <div
+                            v-if="canLikeComment(comment)"
+                            class="action-button"
+                            :class="{ 'is-liked': comment.isLiked }"
+                            @click="toggleLike(comment)"
+                          >
+                            <LikeIconFull v-if="comment.isLiked" />
+                            <LikeIconOutline v-else />
+                            <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
+                              comment.likes
+                            }}</span>
+                          </div>
+
+                          <div
+                            v-if="canReplyToComment(comment)"
+                            class="action-button"
+                            @click="handleReply(comment)"
+                          >
+                            <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
+                              <path
+                                d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </div>
+
                           <span
-                            v-if="comment.userRole"
-                            class="user-role"
-                            :style="{ background: roleColors[comment.userRole] }"
+                            v-if="shouldShowBlockedUI(comment) && comment.isExpanded && isNodeAdmin"
+                            class="action"
+                            @click="handleUnblock(comment)"
+                            >取消屏蔽</span
                           >
-                            {{ roleNames[comment.userRole] }}
-                          </span>
-                        </div>
-                      </div>
 
-                      <div
-                        class="comment-content-text"
-                        :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
-                      >
-                        <div
-                          v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
-                          class="blocked-status-row"
-                        >
-                          <BlockedWarningIcon />
-                          <span class="blocked-text">该评论已屏蔽</span>
-                          <span class="view-link" @click="toggleBlockedComment(comment)"
-                            >点击查看</span
+                          <div
+                            v-if="commentHasMoreMenuActions(comment)"
+                            class="action-button more"
+                            @click="toggleMoreMenu(comment.id, $event)"
                           >
+                            <svg width="14" height="3" viewBox="0 0 14 3">
+                              <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
+                              <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
+                              <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
+                            </svg>
+                          </div>
                         </div>
-                        <span v-else class="comment-text-body">{{ comment.content }}</span>
-                      </div>
-
-                      <div
-                        v-if="!shouldShowBlockedUI(comment) || comment.isExpanded"
-                        class="comment-actions"
-                      >
-                        <span class="time">{{ comment.time }}</span>
 
                         <div
-                          v-if="canLikeComment(comment)"
-                          class="action-button"
-                          :class="{ 'is-liked': comment.isLiked }"
-                          @click="toggleLike(comment)"
+                          v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
+                          class="blocked-footer"
                         >
-                          <LikeIconFull v-if="comment.isLiked" />
-                          <LikeIconOutline v-else />
-                          <span v-if="hasLikeCount(comment.likes)" class="like-count">{{
-                            comment.likes
-                          }}</span>
-                        </div>
-
-                        <div v-if="canReplyToComment(comment)" class="action-button" @click="handleReply(comment)">
-                          <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
-                            <path
-                              d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
-                              fill="currentColor"
-                            />
-                          </svg>
-                        </div>
-
-                        <span
-                          v-if="shouldShowBlockedUI(comment) && comment.isExpanded && isNodeAdmin"
-                          class="action"
-                          @click="handleUnblock(comment)"
-                          >取消屏蔽</span
-                        >
-
-                        <div
-                          v-if="commentHasMoreMenuActions(comment)"
-                          class="action-button more"
-                          @click="toggleMoreMenu(comment.id, $event)"
-                        >
-                          <svg width="14" height="3" viewBox="0 0 14 3">
-                            <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                            <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
-                            <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
-                          </svg>
+                          <div class="blocked-footer-status">
+                            <BlockedWarningIcon :size="14" />
+                            <span class="blocked-text">该评论已屏蔽</span>
+                          </div>
+                          <button
+                            type="button"
+                            class="blocked-comment-collapse"
+                            @click="toggleBlockedComment(comment)"
+                          >
+                            收起
+                          </button>
                         </div>
                       </div>
+                    </div>
 
-                      <div
-                        v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
-                        class="blocked-footer"
-                      >
-                        <div class="blocked-footer-status">
-                          <BlockedWarningIcon :size="14" />
-                          <span class="blocked-text">该评论已屏蔽</span>
-                        </div>
+                    <!-- 主评论的回复输入框 -->
+                    <div
+                      v-if="
+                        comment.showReplyInput &&
+                        replyingTo &&
+                        (!shouldShowBlockedUI(comment) || comment.isExpanded)
+                      "
+                      class="reply-input-section"
+                      :data-reply-to="replyingTo.id"
+                    >
+                      <div class="avatar small">
+                        <img :src="avatarUrl" alt="avatar" />
+                      </div>
+                      <div class="input-box">
+                        <textarea
+                          v-model="commentInput"
+                          :maxlength="COMMENT_MAX_LENGTH"
+                          :placeholder="`回复@${replyingTo.username}：`"
+                          @keydown.enter.ctrl="handlePublish"
+                        ></textarea>
+                        <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
+                        <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                         <button
-                          type="button"
-                          class="blocked-comment-collapse"
-                          @click="toggleBlockedComment(comment)"
+                          class="btn-publish"
+                          :class="{ disabled: !commentInput.trim() || publishSubmitting }"
+                          @click="handlePublish"
                         >
-                          收起
+                          发布
                         </button>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- 主评论的回复输入框 -->
-                  <div
-                    v-if="
-                      comment.showReplyInput &&
-                      replyingTo &&
-                      (!shouldShowBlockedUI(comment) || comment.isExpanded)
-                    "
-                    class="reply-input-section"
-                    :data-reply-to="replyingTo.id"
-                  >
-                    <div class="avatar small">
-                      <img :src="avatarUrl" alt="avatar" />
-                    </div>
-                    <div class="input-box">
-                      <textarea
-                        v-model="commentInput"
-                        :maxlength="COMMENT_MAX_LENGTH"
-                        :placeholder="`回复@${replyingTo.username}：`"
-                        @keydown.enter.ctrl="handlePublish"
-                      ></textarea>
-                      <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
-                      <button class="btn-cancel-reply" @click="cancelReply">取消</button>
-                      <button
-                        class="btn-publish"
-                        :class="{ disabled: !commentInput.trim() || publishSubmitting }"
-                        @click="handlePublish"
-                      >
-                        发布
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（仅节点商） -->
-                  <div
-                    v-if="shouldShowRepliesSection(comment)"
-                    class="replies-section"
-                  >
-                    <div class="replies">
-                      <div
-                        v-for="reply in getDisplayedReplies(comment)"
-                        :key="reply.id"
-                        class="comment-item reply-item"
-                      >
+                    <!-- 回复列表：父评论被屏蔽且未展开时不展示子评论（仅节点商） -->
+                    <div v-if="shouldShowRepliesSection(comment)" class="replies-section">
+                      <div class="replies">
                         <div
-                          class="comment-main"
-                          :class="{
-                            'comment-blocked':
-                              shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
-                            'comment-blocked--expanded':
-                              shouldShowBlockedUI(reply) && reply.isExpanded
-                          }"
+                          v-for="reply in getDisplayedReplies(comment)"
+                          :key="reply.id"
+                          class="comment-item reply-item"
                         >
-                          <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
-                          <div class="comment-body">
-                            <div class="comment-header">
-                              <div class="user-info">
-                                <span class="username">{{ reply.username }}</span>
+                          <div
+                            class="comment-main"
+                            :class="{
+                              'comment-blocked':
+                                shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
+                              'comment-blocked--expanded':
+                                shouldShowBlockedUI(reply) && reply.isExpanded
+                            }"
+                          >
+                            <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
+                            <div class="comment-body">
+                              <div class="comment-header">
+                                <div class="user-info">
+                                  <span class="username">{{ reply.username }}</span>
+                                  <span
+                                    v-if="reply.userRole"
+                                    class="user-role"
+                                    :style="{ background: roleColors[reply.userRole] }"
+                                  >
+                                    {{ roleNames[reply.userRole] }}
+                                  </span>
+                                  <span v-if="reply.replyTo" class="reply-to">回复</span>
+                                  <span v-if="reply.replyTo" class="username">{{
+                                    reply.replyTo
+                                  }}</span>
+                                  <span
+                                    v-if="reply.replyToUserRole"
+                                    class="user-role"
+                                    :style="{ background: roleColors[reply.replyToUserRole] }"
+                                  >
+                                    {{ roleNames[reply.replyToUserRole] }}
+                                  </span>
+                                </div>
+                              </div>
+                              <div
+                                class="comment-content-text"
+                                :class="{
+                                  blocked: shouldShowBlockedUI(reply) && !reply.isExpanded
+                                }"
+                              >
+                                <div
+                                  v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
+                                  class="blocked-status-row"
+                                >
+                                  <BlockedWarningIcon />
+                                  <span class="blocked-text">该评论已屏蔽</span>
+                                  <span class="view-link" @click="toggleBlockedComment(reply)"
+                                    >点击查看</span
+                                  >
+                                </div>
+                                <span v-else class="comment-text-body">{{ reply.content }}</span>
+                              </div>
+                              <div
+                                v-if="
+                                  (!shouldShowBlockedUI(comment) || comment.isExpanded) &&
+                                  (!shouldShowBlockedUI(reply) || reply.isExpanded)
+                                "
+                                class="comment-actions"
+                              >
+                                <span class="time">{{ reply.time }}</span>
+
+                                <div
+                                  v-if="canLikeComment(reply, comment)"
+                                  class="action-button"
+                                  :class="{ 'is-liked': reply.isLiked }"
+                                  @click="toggleLike(reply, comment)"
+                                >
+                                  <LikeIconFull v-if="reply.isLiked" />
+                                  <LikeIconOutline v-else />
+                                  <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
+                                    reply.likes
+                                  }}</span>
+                                </div>
+
+                                <div
+                                  v-if="canReplyToComment(reply, comment)"
+                                  class="action-button"
+                                  @click="handleReply(reply, comment)"
+                                >
+                                  <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
+                                    <path
+                                      d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </div>
+
                                 <span
-                                  v-if="reply.userRole"
-                                  class="user-role"
-                                  :style="{ background: roleColors[reply.userRole] }"
+                                  v-if="
+                                    shouldShowBlockedUI(reply) && reply.isExpanded && isNodeAdmin
+                                  "
+                                  class="action"
+                                  @click="handleUnblock(reply)"
+                                  >取消屏蔽</span
                                 >
-                                  {{ roleNames[reply.userRole] }}
-                                </span>
-                                <span v-if="reply.replyTo" class="reply-to">回复</span>
-                                <span v-if="reply.replyTo" class="username">{{
-                                  reply.replyTo
-                                }}</span>
-                                <span
-                                  v-if="reply.replyToUserRole"
-                                  class="user-role"
-                                  :style="{ background: roleColors[reply.replyToUserRole] }"
+
+                                <div
+                                  v-if="commentHasMoreMenuActions(reply)"
+                                  class="action-button more"
+                                  @click="toggleMoreMenu(reply.id, $event)"
                                 >
-                                  {{ roleNames[reply.replyToUserRole] }}
-                                </span>
+                                  <svg width="14" height="3" viewBox="0 0 14 3">
+                                    <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
+                                    <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
+                                    <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
+                                  </svg>
+                                </div>
+                              </div>
+
+                              <div
+                                v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
+                                class="blocked-footer"
+                              >
+                                <div class="blocked-footer-status">
+                                  <BlockedWarningIcon :size="14" />
+                                  <span class="blocked-text">该评论已屏蔽</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  class="blocked-comment-collapse"
+                                  @click="toggleBlockedComment(reply)"
+                                >
+                                  收起
+                                </button>
                               </div>
                             </div>
-                            <div
-                              class="comment-content-text"
-                              :class="{ blocked: shouldShowBlockedUI(reply) && !reply.isExpanded }"
-                            >
-                              <div
-                                v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
-                                class="blocked-status-row"
-                              >
-                                <BlockedWarningIcon />
-                                <span class="blocked-text">该评论已屏蔽</span>
-                                <span class="view-link" @click="toggleBlockedComment(reply)"
-                                  >点击查看</span
-                                >
-                              </div>
-                              <span v-else class="comment-text-body">{{ reply.content }}</span>
+                          </div>
+
+                          <!-- 回复的回复输入框 -->
+                          <div
+                            v-if="
+                              reply.showReplyInput &&
+                              replyingTo &&
+                              (!shouldShowBlockedUI(reply) || reply.isExpanded)
+                            "
+                            class="reply-input-section nested"
+                          >
+                            <div class="avatar small">
+                              <img :src="avatarUrl" alt="avatar" />
                             </div>
-                            <div
-                              v-if="
-                                (!shouldShowBlockedUI(comment) || comment.isExpanded) &&
-                                (!shouldShowBlockedUI(reply) || reply.isExpanded)
-                              "
-                              class="comment-actions"
-                            >
-                              <span class="time">{{ reply.time }}</span>
-
-                              <div
-                                v-if="canLikeComment(reply, comment)"
-                                class="action-button"
-                                :class="{ 'is-liked': reply.isLiked }"
-                                @click="toggleLike(reply, comment)"
-                              >
-                                <LikeIconFull v-if="reply.isLiked" />
-                                <LikeIconOutline v-else />
-                                <span v-if="hasLikeCount(reply.likes)" class="like-count">{{
-                                  reply.likes
-                                }}</span>
-                              </div>
-
-                              <div
-                          v-if="canReplyToComment(reply, comment)"
-                          class="action-button"
-                          @click="handleReply(reply, comment)"
-                        >
-                                <svg width="14" height="13" viewBox="0 0 14 12.2544" fill="none">
-                                  <path
-                                    d="M13.125 6.12537C13.125 3.28452 10.4461 0.875053 7 0.875053C3.55391 0.875053 0.875 3.28452 0.875 6.12537C0.875 7.03616 1.14573 7.89456 1.62631 8.64521C1.63041 8.65162 1.63171 8.65365 1.64062 8.66743L1.84891 8.98916L1.30075 11.1285L3.8403 10.6299L4.09793 10.7491C4.96007 11.148 5.9478 11.3757 7 11.3757V12.2507C5.8214 12.2507 4.70827 11.9955 3.7305 11.5432L0.109375 12.2544L0.906189 9.14319C0.900562 9.13451 0.894893 9.12585 0.889313 9.11713C0.324561 8.23502 0 7.21422 0 6.12537C0 2.68574 3.19488 0 7 0C10.8051 0 14 2.68574 14 6.12537C14 9.565 10.8051 12.2507 7 12.2507V11.3757C10.4461 11.3757 13.125 8.96622 13.125 6.12537Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                              </div>
-
-                              <span
-                                v-if="shouldShowBlockedUI(reply) && reply.isExpanded && isNodeAdmin"
-                                class="action"
-                                @click="handleUnblock(reply)"
-                                >取消屏蔽</span
-                              >
-
-                              <div
-                                v-if="commentHasMoreMenuActions(reply)"
-                                class="action-button more"
-                                @click="toggleMoreMenu(reply.id, $event)"
-                              >
-                                <svg width="14" height="3" viewBox="0 0 14 3">
-                                  <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor" />
-                                  <circle cx="7" cy="1.5" r="1.5" fill="currentColor" />
-                                  <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
-                                </svg>
-                              </div>
-                            </div>
-
-                            <div
-                              v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
-                              class="blocked-footer"
-                            >
-                              <div class="blocked-footer-status">
-                                <BlockedWarningIcon :size="14" />
-                                <span class="blocked-text">该评论已屏蔽</span>
-                              </div>
+                            <div class="input-box">
+                              <textarea
+                                v-model="commentInput"
+                                :maxlength="COMMENT_MAX_LENGTH"
+                                :placeholder="`回复@${replyingTo.username}：`"
+                                @keydown.enter.ctrl="handlePublish"
+                              ></textarea>
+                              <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
+                              <button class="btn-cancel-reply" @click="cancelReply">取消</button>
                               <button
-                                type="button"
-                                class="blocked-comment-collapse"
-                                @click="toggleBlockedComment(reply)"
+                                class="btn-publish"
+                                :class="{ disabled: !commentInput.trim() || publishSubmitting }"
+                                @click="handlePublish"
                               >
-                                收起
+                                发布
                               </button>
                             </div>
                           </div>
                         </div>
+                      </div>
 
-                        <!-- 回复的回复输入框 -->
-                        <div
-                          v-if="
-                            reply.showReplyInput &&
-                            replyingTo &&
-                            (!shouldShowBlockedUI(reply) || reply.isExpanded)
-                          "
-                          class="reply-input-section nested"
+                      <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
+                      <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
+                        <!-- 未展开时显示提示 -->
+                        <span
+                          v-if="!comment.showAllReplies"
+                          class="toggle-link"
+                          @click="toggleReplies(comment)"
                         >
-                          <div class="avatar small">
-                            <img :src="avatarUrl" alt="avatar" />
-                          </div>
-                          <div class="input-box">
-                            <textarea
-                              v-model="commentInput"
-                              :maxlength="COMMENT_MAX_LENGTH"
-                              :placeholder="`回复@${replyingTo.username}：`"
-                              @keydown.enter.ctrl="handlePublish"
-                            ></textarea>
-                            <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
-                            <button class="btn-cancel-reply" @click="cancelReply">取消</button>
-                            <button
-                              class="btn-publish"
-                              :class="{ disabled: !commentInput.trim() || publishSubmitting }"
-                              @click="handlePublish"
+                          共{{ getReplyListTotal(comment) }}条回复，点击查看
+                        </span>
+                        <!-- 展开后显示分页 -->
+                        <template v-else>
+                          <span class="page-info"
+                            >共{{ getTotalReplyPages(comment) }}页
+                            {{ getReplyListTotal(comment) }}条回复</span
+                          >
+                          <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
+                          <template
+                            v-for="(item, index) in getReplyPageLinkItems(comment)"
+                            :key="item.type === 'page' ? `page-${item.page}` : `ellipsis-${index}`"
+                          >
+                            <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
+                            <span
+                              v-else
+                              class="page-link"
+                              :class="{
+                                active: (comment.currentReplyPage || 1) === item.page
+                              }"
+                              @click="changeReplyPage(comment, item.page)"
                             >
-                              发布
-                            </button>
-                          </div>
-                        </div>
+                              {{ item.page }}
+                            </span>
+                          </template>
+                          <span
+                            v-if="
+                              comment.currentReplyPage &&
+                              comment.currentReplyPage < getTotalReplyPages(comment)
+                            "
+                            class="page-link"
+                            @click="nextReplyPage(comment)"
+                          >
+                            下一页
+                          </span>
+                          <span class="page-link" @click="toggleReplies(comment)">收起</span>
+                        </template>
                       </div>
                     </div>
-
-                    <!-- 展开/收起回复：折叠预览 3 条，展开后每页 10 条 -->
-                    <div v-if="shouldShowReplyExpandControl(comment)" class="replies-toggle">
-                      <!-- 未展开时显示提示 -->
-                      <span
-                        v-if="!comment.showAllReplies"
-                        class="toggle-link"
-                        @click="toggleReplies(comment)"
-                      >
-                        共{{ getReplyListTotal(comment) }}条回复，点击查看
-                      </span>
-                      <!-- 展开后显示分页 -->
-                      <template v-else>
-                        <span class="page-info"
-                          >共{{ getTotalReplyPages(comment) }}页
-                          {{ getReplyListTotal(comment) }}条回复</span
-                        >
-                        <span v-if="comment.repliesLoading" class="replies-loading">加载中…</span>
-                        <template
-                          v-for="(item, index) in getReplyPageLinkItems(comment)"
-                          :key="
-                            item.type === 'page'
-                              ? `page-${item.page}`
-                              : `ellipsis-${index}`
-                          "
-                        >
-                          <span v-if="item.type === 'ellipsis'" class="page-ellipsis">…</span>
-                          <span
-                            v-else
-                            class="page-link"
-                            :class="{
-                              active: (comment.currentReplyPage || 1) === item.page
-                            }"
-                            @click="changeReplyPage(comment, item.page)"
-                          >
-                            {{ item.page }}
-                          </span>
-                        </template>
-                        <span
-                          v-if="
-                            comment.currentReplyPage &&
-                            comment.currentReplyPage < getTotalReplyPages(comment)
-                          "
-                          class="page-link"
-                          @click="nextReplyPage(comment)"
-                        >
-                          下一页
-                        </span>
-                        <span class="page-link" @click="toggleReplies(comment)">收起</span>
-                      </template>
-                    </div>
                   </div>
-                </div>
                 </template>
               </div>
               <div ref="rootLoadMoreSentinelRef" class="comment-root-load-more-tail">
@@ -1085,10 +1078,10 @@ void [
                 </div>
                 <div class="input-box">
                   <textarea
-              v-model="commentInput"
-              :maxlength="COMMENT_MAX_LENGTH"
-              placeholder="写下你的评论..."
-            ></textarea>
+                    v-model="commentInput"
+                    :maxlength="COMMENT_MAX_LENGTH"
+                    placeholder="写下你的评论..."
+                  ></textarea>
                   <span class="input-char-count">{{ COMMENT_MAX_LENGTH }}</span>
                   <button
                     class="btn-publish"
