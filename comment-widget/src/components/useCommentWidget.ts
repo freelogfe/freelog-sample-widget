@@ -749,6 +749,12 @@ function canDeleteComment(comment: Comment): boolean {
   return commentIsOwnByViewer(comment);
 }
 
+/** 节点商可屏蔽他人评论，不可屏蔽自己发布的评论 */
+function canBlockComment(comment: Comment): boolean {
+  if (!props.isNodeAdmin || comment.isBlocked) return false;
+  return !commentIsOwnByViewer(comment);
+}
+
 /** 「更多」里是否展示举报（不能举报本人评论；已屏蔽的评论不展示举报） */
 function showReportInMoreMenuFor(comment: Comment): boolean {
   if (comment.isBlocked) return false;
@@ -759,7 +765,7 @@ function countMoreMenuRows(comment: Comment): number {
   let n = 0;
   if (canDeleteComment(comment)) n += 1;
   if (showReportInMoreMenuFor(comment)) n += 1;
-  if (props.isNodeAdmin && !comment.isBlocked) n += 1;
+  if (canBlockComment(comment)) n += 1;
   return n;
 }
 
@@ -923,7 +929,7 @@ const handleReport = () => {
 };
 
 const handleBlock = async (comment: Comment) => {
-  if (!props.isNodeAdmin) return;
+  if (!canBlockComment(comment)) return;
   if (blockSubmitting.value || deleteSubmitting.value) return;
   blockSubmitting.value = true;
   try {
@@ -1452,6 +1458,7 @@ onUnmounted(() => {
     canLikeComment,
     canReplyToComment,
     canDeleteComment,
+    canBlockComment,
     shouldShowBlockedUI,
     shouldInheritParentBlockedUI,
     shouldShowRepliesSection,

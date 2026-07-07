@@ -53,6 +53,7 @@ const {
   canLikeComment,
   canReplyToComment,
   canDeleteComment,
+  canBlockComment,
   shouldShowBlockedUI,
   shouldInheritParentBlockedUI,
   shouldShowRepliesSection,
@@ -596,7 +597,7 @@ void [
             <span>举报</span>
           </div>
           <div
-            v-if="menuTargetComment && isNodeAdmin && !menuTargetComment.isBlocked"
+            v-if="menuTargetComment && canBlockComment(menuTargetComment)"
             class="menu-item"
             :class="{ 'is-disabled': blockSubmitting || deleteSubmitting }"
             @click="handleBlock(menuTargetComment)"
