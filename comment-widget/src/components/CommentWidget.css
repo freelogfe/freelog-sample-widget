@@ -295,13 +295,13 @@
 }
 
 /**
- * 已屏蔽：除「点击查看」「收起」「取消屏蔽」外统一 opacity: 0.4
+ * 已屏蔽（收起态）：除「点击查看」「收起」「取消屏蔽」外统一 opacity: 0.4
+ * 展开态：正文与操作区正常显示，底部屏蔽提示行降透明度
  */
-.comment-main.comment-blocked .avatar,
-.comment-main.comment-blocked .comment-header,
-.comment-main.comment-blocked .blocked-text,
-.comment-main.comment-blocked .comment-actions > .time,
-.comment-main.comment-blocked .comment-actions > .action-button {
+.comment-main.comment-blocked:not(.comment-blocked--expanded) .avatar,
+.comment-main.comment-blocked:not(.comment-blocked--expanded) .comment-header,
+.comment-main.comment-blocked:not(.comment-blocked--expanded) .blocked-status-row .blocked-warning-icon,
+.comment-main.comment-blocked:not(.comment-blocked--expanded) .blocked-status-row .blocked-text {
   opacity: 0.4;
 }
 
@@ -311,8 +311,65 @@
   opacity: 1;
 }
 
-.comment-main.comment-blocked .comment-text-body {
+.comment-main.comment-blocked:not(:hover) .view-link {
+  visibility: hidden;
+}
+
+.comment-main.comment-blocked--expanded .blocked-footer .blocked-warning-icon,
+.comment-main.comment-blocked--expanded .blocked-footer .blocked-text {
   opacity: 0.4;
+}
+
+.blocked-status-row,
+.blocked-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.blocked-status-row {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.blocked-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.blocked-warning-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.blocked-text {
+  color: var(--text-secondary);
+}
+
+.blocked-comment-collapse {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--page-color);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.blocked-comment-collapse:hover {
+  text-decoration: underline;
+}
+
+.blocked-comment-collapse:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--page-color) 45%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .comment-body {
@@ -364,9 +421,7 @@
   word-break: break-word;
 }
 
-.comment-text-body,
-.comment-content-text .blocked-content,
-.comment-content-text .blocked-expanded-text {
+.comment-text-body {
   flex: 1;
   min-width: 0;
   white-space: pre-wrap;
@@ -376,67 +431,6 @@
 
 .comment-content-text.blocked {
   display: flex;
-  gap: 10px;
-}
-
-.blocked-text {
-  color: var(--text-secondary);
-}
-
-.blocked-content {
-  opacity: 0.4;
-}
-
-/**
- * 已屏蔽且展开：正文与「收起」同一行流式排版（与设计稿一致）；
- * 正文可换行，「收起」保持横向不换行、不继承 word-break。
- */
-.comment-content-text > .blocked-expanded-stack {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  /* line-height: 1.43; */
-}
-
-.blocked-expanded-stack .comment-text-body,
-.blocked-expanded-stack .blocked-expanded-text {
-  display: inline;
-  flex: none;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-.comment-content-text.blocked-expanded-row {
-  display: block;
-}
-
-.blocked-expanded-stack .blocked-comment-collapse {
-  display: inline;
-  margin: 0 0 0 10px;
-  padding: 0;
-  border: none;
-  background: none;
-  font: inherit;
-  font-size: 14px;
-  line-height: inherit;
-  color: var(--page-color);
-  cursor: pointer;
-  vertical-align: baseline;
-  white-space: nowrap;
-  word-break: keep-all;
-  overflow-wrap: normal;
-  writing-mode: horizontal-tb;
-}
-
-.blocked-comment-collapse:hover {
-  text-decoration: underline;
-}
-
-.blocked-comment-collapse:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--page-color) 45%, transparent);
-  outline-offset: 2px;
-  border-radius: 2px;
 }
 
 .view-link,

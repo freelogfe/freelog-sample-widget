@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BlockedWarningIcon from "./BlockedWarningIcon.vue";
 import LikeIconFull from "./LikeIconFull.vue";
 import LikeIconOutline from "./LikeIconOutline.vue";
 import ReportPanelContent from "./ReportPanelContent.vue";
@@ -145,7 +146,13 @@ void [
           </div>
           <template v-else>
           <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
-            <div class="comment-main" :class="{ 'comment-blocked': shouldShowBlockedUI(comment) }">
+            <div
+              class="comment-main"
+              :class="{
+                'comment-blocked': shouldShowBlockedUI(comment),
+                'comment-blocked--expanded': shouldShowBlockedUI(comment) && comment.isExpanded
+              }"
+            >
               <div class="avatar" :style="commentAvatarStyle(comment)"></div>
               <div class="comment-body">
                 <div class="comment-header">
@@ -163,31 +170,17 @@ void [
 
                 <div
                   class="comment-content-text"
-                  :class="{
-                    blocked: shouldShowBlockedUI(comment) && !comment.isExpanded,
-                    'blocked-expanded-row':
-                      shouldShowBlockedUI(comment) && comment.isExpanded
-                  }"
+                  :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
                 >
-                  <template v-if="shouldShowBlockedUI(comment) && !comment.isExpanded">
+                  <div
+                    v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
+                    class="blocked-status-row"
+                  >
+                    <BlockedWarningIcon />
                     <span class="blocked-text">该评论已屏蔽</span>
                     <span class="view-link" @click="toggleBlockedComment(comment)">点击查看</span>
-                  </template>
-                  <template v-else>
-                    <div v-if="shouldShowBlockedUI(comment)" class="blocked-expanded-stack">
-                      <span class="comment-text-body blocked-content blocked-expanded-text">{{
-                        comment.content
-                      }}</span>
-                      <button
-                        type="button"
-                        class="blocked-comment-collapse"
-                        @click="toggleBlockedComment(comment)"
-                      >
-                        收起
-                      </button>
-                    </div>
-                    <span v-else class="comment-text-body">{{ comment.content }}</span>
-                  </template>
+                  </div>
+                  <span v-else class="comment-text-body">{{ comment.content }}</span>
                 </div>
 
                 <div
@@ -237,6 +230,23 @@ void [
                     </svg>
                   </div>
                 </div>
+
+                <div
+                  v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
+                  class="blocked-footer"
+                >
+                  <div class="blocked-footer-status">
+                    <BlockedWarningIcon :size="14" />
+                    <span class="blocked-text">该评论已屏蔽</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="blocked-comment-collapse"
+                    @click="toggleBlockedComment(comment)"
+                  >
+                    收起
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -285,7 +295,12 @@ void [
                 >
                   <div
                     class="comment-main"
-                    :class="{ 'comment-blocked': shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment) }"
+                    :class="{
+                      'comment-blocked':
+                        shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
+                      'comment-blocked--expanded':
+                        shouldShowBlockedUI(reply) && reply.isExpanded
+                    }"
                   >
                     <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
                     <div class="comment-body">
@@ -312,35 +327,19 @@ void [
                       </div>
                       <div
                         class="comment-content-text"
-                        :class="{
-                          blocked: shouldShowBlockedUI(reply) && !reply.isExpanded,
-                          'blocked-expanded-row':
-                            shouldShowBlockedUI(reply) && reply.isExpanded
-                        }"
+                        :class="{ blocked: shouldShowBlockedUI(reply) && !reply.isExpanded }"
                       >
-                        <template v-if="shouldShowBlockedUI(reply) && !reply.isExpanded">
+                        <div
+                          v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
+                          class="blocked-status-row"
+                        >
+                          <BlockedWarningIcon />
                           <span class="blocked-text">该评论已屏蔽</span>
                           <span class="view-link" @click="toggleBlockedComment(reply)"
                             >点击查看</span
                           >
-                        </template>
-                        <template v-else>
-                          <div v-if="shouldShowBlockedUI(reply)" class="blocked-expanded-stack">
-                            <span
-                              class="comment-text-body blocked-expanded-text"
-                              :class="{ 'blocked-content': shouldShowBlockedUI(reply) }"
-                              >{{ reply.content }}</span
-                            >
-                            <button
-                              type="button"
-                              class="blocked-comment-collapse"
-                              @click="toggleBlockedComment(reply)"
-                            >
-                              收起
-                            </button>
-                          </div>
-                          <span v-else class="comment-text-body">{{ reply.content }}</span>
-                        </template>
+                        </div>
+                        <span v-else class="comment-text-body">{{ reply.content }}</span>
                       </div>
                       <div
                         v-if="
@@ -395,6 +394,23 @@ void [
                             <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                           </svg>
                         </div>
+                      </div>
+
+                      <div
+                        v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
+                        class="blocked-footer"
+                      >
+                        <div class="blocked-footer-status">
+                          <BlockedWarningIcon :size="14" />
+                          <span class="blocked-text">该评论已屏蔽</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="blocked-comment-collapse"
+                          @click="toggleBlockedComment(reply)"
+                        >
+                          收起
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -689,7 +705,13 @@ void [
                 </div>
                 <template v-else>
                 <div v-for="comment in visibleComments" :key="comment.id" class="comment-item">
-                  <div class="comment-main" :class="{ 'comment-blocked': shouldShowBlockedUI(comment) }">
+                  <div
+              class="comment-main"
+              :class="{
+                'comment-blocked': shouldShowBlockedUI(comment),
+                'comment-blocked--expanded': shouldShowBlockedUI(comment) && comment.isExpanded
+              }"
+            >
                     <div class="avatar" :style="commentAvatarStyle(comment)"></div>
                     <div class="comment-body">
                       <div class="comment-header">
@@ -707,33 +729,19 @@ void [
 
                       <div
                         class="comment-content-text"
-                        :class="{
-                          blocked: shouldShowBlockedUI(comment) && !comment.isExpanded,
-                          'blocked-expanded-row':
-                            shouldShowBlockedUI(comment) && comment.isExpanded
-                        }"
+                        :class="{ blocked: shouldShowBlockedUI(comment) && !comment.isExpanded }"
                       >
-                        <template v-if="shouldShowBlockedUI(comment) && !comment.isExpanded">
+                        <div
+                          v-if="shouldShowBlockedUI(comment) && !comment.isExpanded"
+                          class="blocked-status-row"
+                        >
+                          <BlockedWarningIcon />
                           <span class="blocked-text">该评论已屏蔽</span>
                           <span class="view-link" @click="toggleBlockedComment(comment)"
                             >点击查看</span
                           >
-                        </template>
-                        <template v-else>
-                          <div v-if="shouldShowBlockedUI(comment)" class="blocked-expanded-stack">
-                            <span class="comment-text-body blocked-content blocked-expanded-text">{{
-                              comment.content
-                            }}</span>
-                            <button
-                              type="button"
-                              class="blocked-comment-collapse"
-                              @click="toggleBlockedComment(comment)"
-                            >
-                              收起
-                            </button>
-                          </div>
-                          <span v-else class="comment-text-body">{{ comment.content }}</span>
-                        </template>
+                        </div>
+                        <span v-else class="comment-text-body">{{ comment.content }}</span>
                       </div>
 
                       <div
@@ -783,6 +791,23 @@ void [
                           </svg>
                         </div>
                       </div>
+
+                      <div
+                        v-if="shouldShowBlockedUI(comment) && comment.isExpanded"
+                        class="blocked-footer"
+                      >
+                        <div class="blocked-footer-status">
+                          <BlockedWarningIcon :size="14" />
+                          <span class="blocked-text">该评论已屏蔽</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="blocked-comment-collapse"
+                          @click="toggleBlockedComment(comment)"
+                        >
+                          收起
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -831,7 +856,12 @@ void [
                       >
                         <div
                           class="comment-main"
-                          :class="{ 'comment-blocked': shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment) }"
+                          :class="{
+                            'comment-blocked':
+                              shouldShowBlockedUI(reply) || shouldInheritParentBlockedUI(comment),
+                            'comment-blocked--expanded':
+                              shouldShowBlockedUI(reply) && reply.isExpanded
+                          }"
                         >
                           <div class="avatar small" :style="commentAvatarStyle(reply)"></div>
                           <div class="comment-body">
@@ -860,35 +890,19 @@ void [
                             </div>
                             <div
                               class="comment-content-text"
-                              :class="{
-                                blocked: shouldShowBlockedUI(reply) && !reply.isExpanded,
-                                'blocked-expanded-row':
-                                  shouldShowBlockedUI(reply) && reply.isExpanded
-                              }"
+                              :class="{ blocked: shouldShowBlockedUI(reply) && !reply.isExpanded }"
                             >
-                              <template v-if="shouldShowBlockedUI(reply) && !reply.isExpanded">
+                              <div
+                                v-if="shouldShowBlockedUI(reply) && !reply.isExpanded"
+                                class="blocked-status-row"
+                              >
+                                <BlockedWarningIcon />
                                 <span class="blocked-text">该评论已屏蔽</span>
                                 <span class="view-link" @click="toggleBlockedComment(reply)"
                                   >点击查看</span
                                 >
-                              </template>
-                              <template v-else>
-                                <div v-if="shouldShowBlockedUI(reply)" class="blocked-expanded-stack">
-                                  <span
-                                    class="comment-text-body blocked-expanded-text"
-                                    :class="{ 'blocked-content': shouldShowBlockedUI(reply) }"
-                                    >{{ reply.content }}</span
-                                  >
-                                  <button
-                                    type="button"
-                                    class="blocked-comment-collapse"
-                                    @click="toggleBlockedComment(reply)"
-                                  >
-                                    收起
-                                  </button>
-                                </div>
-                                <span v-else class="comment-text-body">{{ reply.content }}</span>
-                              </template>
+                              </div>
+                              <span v-else class="comment-text-body">{{ reply.content }}</span>
                             </div>
                             <div
                               v-if="
@@ -943,6 +957,23 @@ void [
                                   <circle cx="12.5" cy="1.5" r="1.5" fill="currentColor" />
                                 </svg>
                               </div>
+                            </div>
+
+                            <div
+                              v-if="shouldShowBlockedUI(reply) && reply.isExpanded"
+                              class="blocked-footer"
+                            >
+                              <div class="blocked-footer-status">
+                                <BlockedWarningIcon :size="14" />
+                                <span class="blocked-text">该评论已屏蔽</span>
+                              </div>
+                              <button
+                                type="button"
+                                class="blocked-comment-collapse"
+                                @click="toggleBlockedComment(reply)"
+                              >
+                                收起
+                              </button>
                             </div>
                           </div>
                         </div>
