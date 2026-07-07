@@ -61,12 +61,12 @@
 }
 
 .drawer-report-panel .btn-primary {
-  background: #2784ff;
+  background: var(--page-color, var(--theme-color));
   color: #fff;
 }
 
-.drawer-report-panel .btn-primary:hover {
-  background: #1a73e8;
+.drawer-report-panel .btn-primary:hover:not(:disabled) {
+  filter: brightness(0.92);
 }
 
 .drawer-report-panel .btn-primary:disabled {
@@ -96,12 +96,12 @@
 }
 
 .drawer-report-panel .report-option:hover {
-  border-color: var(--theme-color);
+  border-color: var(--page-color, var(--theme-color));
 }
 
 .drawer-report-panel .report-option.active {
-  background: rgba(39, 132, 255, 0.1);
-  border-color: var(--theme-color);
+  background: color-mix(in srgb, var(--page-color, var(--theme-color)) 10%, transparent);
+  border-color: var(--page-color, var(--theme-color));
 }
 
 .drawer-report-panel .report-option span {
@@ -124,7 +124,7 @@
 }
 
 .comment-widget.theme-light .drawer-report-panel .radio.checked {
-  border-color: var(--theme-color);
+  border-color: var(--page-color, var(--theme-color));
 }
 
 .comment-widget.theme-dark .drawer-report-panel .radio {
@@ -132,7 +132,7 @@
 }
 
 .comment-widget.theme-dark .drawer-report-panel .radio.checked {
-  border-color: var(--theme-color);
+  border-color: var(--page-color, var(--theme-color));
 }
 
 .drawer-report-panel .radio-dot {
@@ -142,7 +142,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--theme-color);
+  background: var(--page-color, var(--theme-color));
 }
 
 .drawer-report-panel .hint {
@@ -170,7 +170,7 @@
 }
 
 .drawer-report-panel .report-detail:focus {
-  border-color: var(--theme-color);
+  border-color: var(--page-color, var(--theme-color));
 }
 
 .drawer-report-panel .report-detail::placeholder {
