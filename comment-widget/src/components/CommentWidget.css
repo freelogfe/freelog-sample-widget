@@ -665,7 +665,7 @@
 }
 
 .theme-dark .menu-item:hover {
-  background: var(--theme-color);
+  background: var(--page-color);
   color: #fff;
 }
 
