@@ -612,7 +612,7 @@
 /* 更多菜单 */
 .more-menu {
   position: fixed;
-  width: 110px;
+  width: 125px;
   background: var(--bg-color);
   border-radius: 4px;
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.2);

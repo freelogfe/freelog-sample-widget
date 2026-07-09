@@ -774,6 +774,12 @@ export function useCommentWidget(props: CommentWidgetProps) {
     return !commentIsOwnByViewer(comment);
   }
 
+  /** 节点商可在更多菜单取消屏蔽他人评论 */
+  function canUnblockComment(comment: Comment): boolean {
+    if (!props.isNodeAdmin || !comment.isBlocked) return false;
+    return !commentIsOwnByViewer(comment);
+  }
+
   /** 「更多」里是否展示举报（不能举报本人评论；已屏蔽的评论不展示举报） */
   function showReportInMoreMenuFor(comment: Comment): boolean {
     if (comment.isBlocked) return false;
@@ -785,6 +791,7 @@ export function useCommentWidget(props: CommentWidgetProps) {
     if (canDeleteComment(comment)) n += 1;
     if (showReportInMoreMenuFor(comment)) n += 1;
     if (canBlockComment(comment)) n += 1;
+    if (canUnblockComment(comment)) n += 1;
     return n;
   }
 
@@ -966,7 +973,7 @@ export function useCommentWidget(props: CommentWidgetProps) {
   };
 
   const handleUnblock = async (comment: Comment) => {
-    if (!props.isNodeAdmin) return;
+    if (!canUnblockComment(comment)) return;
     if (blockSubmitting.value || deleteSubmitting.value) return;
     blockSubmitting.value = true;
     try {
@@ -1476,6 +1483,7 @@ export function useCommentWidget(props: CommentWidgetProps) {
     canReplyToComment,
     canDeleteComment,
     canBlockComment,
+    canUnblockComment,
     shouldShowBlockedUI,
     shouldInheritParentBlockedUI,
     shouldShowRepliesSection,
