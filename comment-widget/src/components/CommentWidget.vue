@@ -545,6 +545,7 @@ void [
           :style="[
             hostSurfaceStyle ?? {},
             {
+              background: theme === 'light' ? hostSurfaceStyle?.background : '#222222',
               left: `${moreMenuPosition.left}px`,
               top: moreMenuPosition.top != null ? `${moreMenuPosition.top}px` : 'auto',
               bottom: moreMenuPosition.bottom != null ? `${moreMenuPosition.bottom}px` : 'auto'
