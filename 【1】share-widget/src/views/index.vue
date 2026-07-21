@@ -22,26 +22,15 @@
             </div>
           </div>
 
-          <div class="copy-btn" @click="share({ id: 'copy', name: '' })">
-            复制链接
-          </div>
+          <div class="copy-btn" @click="share({ id: 'copy', name: '' })">复制链接</div>
 
           <transition name="fade-in-out">
-            <div
-              class="qrcode-popup-wrapper"
-              @click="qrcodeShow = false"
-              v-if="qrcodeShow"
-            >
+            <div class="qrcode-popup-wrapper" @click="qrcodeShow = false" v-if="qrcodeShow">
               <div class="qrcode-popup" @click.stop>
-                <i
-                  class="close-btn freelog fl-icon-guanbi"
-                  @click="qrcodeShow = false"
-                ></i>
+                <i class="close-btn freelog fl-icon-guanbi" @click="qrcodeShow = false"></i>
                 <div class="qrcode-text">分享到{{ qrcodeInfo.name }}</div>
                 <qrcode-vue :value="qrcodeInfo.url" :size="220" level="M" />
-                <div class="qrcode-text">
-                  使用{{ qrcodeInfo.name }}扫一扫完成分享
-                </div>
+                <div class="qrcode-text">使用{{ qrcodeInfo.name }}扫一扫完成分享</div>
               </div>
             </div>
           </transition>
@@ -70,7 +59,7 @@ export default {
       shareText: "",
       href: "",
       qrcodeShow: false,
-      qrcodeInfo: { name: "", url: "" },
+      qrcodeInfo: { name: "", url: "" }
     });
 
     const methods = {
@@ -103,15 +92,13 @@ export default {
           if (shareUrlGenerationException) {
             let url = (freelogApp as any).getWechatShareURL();
 
-            if(shareUrlGenerationException==='图库主题'){
-              const changeUrl = url.replace('home', 'detail');
-              url = changeUrl
-       
+            if (shareUrlGenerationException === "图库主题") {
+              const changeUrl = url.replace("home", "detail");
+              url = changeUrl;
             }
 
             data.qrcodeInfo = { name: item.name, url };
             data.qrcodeShow = true;
-    
           } else {
             const url = (freelogApp as any).getWechatShareURL();
             console.log("qq wechat 分享", url);
@@ -119,7 +106,6 @@ export default {
             data.qrcodeInfo = { name: item.name, url };
             data.qrcodeShow = true;
           }
-   
         } else if (item.id === "copy") {
           // 复制链接
           const input: any = document.getElementById("href");
@@ -127,9 +113,16 @@ export default {
           document.execCommand("Copy");
           showToast("链接复制成功～");
         }
-        // pushMessage4Task({ taskConfigCode: "TS000077", meta: { presentableId: data.exhibit.exhibitId } });
+        (freelogApp as any).pushMessage4Task({
+          taskConfigCode: "TS000077",
+          meta: { presentableId: data.exhibit.exhibitId }
+        });
+        (freelogApp as any).pushMessage4Task({
+          taskConfigCode: "T0004004",
+          meta: { presentableId: data.exhibit.exhibitId }
+        });
         // pushMessage4Task({ taskConfigCode: "TS000804", meta: { presentableId: data.exhibit.exhibitId } });
-      },
+      }
     };
 
     /** 初始化数据 */
@@ -142,7 +135,7 @@ export default {
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
       const { exhibitId, itemId, collection } = widgetConfig.exhibit;
-      
+
       if (type === "漫画") {
         if (itemId) {
           params = { exhibitId, itemId, query: { collection } };
@@ -150,10 +143,7 @@ export default {
           params = { exhibitId };
         }
 
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
+        data.href = (freelogApp as any).getShareUrl(params, widgetConfig.routerType);
       } else if (type === "小说") {
         if (itemId) {
           params = { exhibitId, itemId, query: { collection } };
@@ -161,10 +151,7 @@ export default {
           params = { exhibitId };
         }
 
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
+        data.href = (freelogApp as any).getShareUrl(params, widgetConfig.routerType);
       } else if (type === "博客") {
         if (itemId) {
           params = { exhibitId, itemId };
@@ -172,15 +159,9 @@ export default {
           params = { exhibitId };
         }
 
-        data.href = (freelogApp as any).getShareUrl(
-          params,
-          widgetConfig.routerType
-        );
+        data.href = (freelogApp as any).getShareUrl(params, widgetConfig.routerType);
       } else {
-        data.href = freelogApp.getShareUrl(
-          widgetConfig.exhibit.exhibitId,
-          widgetConfig.routerType
-        );
+        data.href = freelogApp.getShareUrl(widgetConfig.exhibit.exhibitId, widgetConfig.routerType);
       }
 
       data.shareText = `我在freelog发现一个不错的${type}：\n《${data.exhibit.exhibitTitle}》\n${data.href}`;
@@ -191,9 +172,9 @@ export default {
     return {
       shareBtns,
       ...toRefs(data),
-      ...methods,
+      ...methods
     };
-  },
+  }
 };
 </script>
 
