@@ -9,6 +9,7 @@ const show = ref(false);
 const onCloseRef = ref<(() => void) | undefined>();
 const onLoginRef = ref<(() => void) | undefined>();
 const pageBackground = ref<string | undefined>();
+const pageColor = ref<string | undefined>();
 const textPrimary = ref<string | undefined>();
 const textSecondary = ref<string | undefined>();
 const borderColor = ref<string | undefined>();
@@ -58,6 +59,12 @@ function applyWidgetData(data: Record<string, unknown> | null | undefined) {
         ? data.pageBackground.trim()
         : undefined;
   }
+  if ("pageColor" in data) {
+    pageColor.value =
+      typeof data.pageColor === "string" && data.pageColor.trim()
+        ? data.pageColor.trim()
+        : undefined;
+  }
   if ("textPrimary" in data) {
     textPrimary.value =
       typeof data.textPrimary === "string" && data.textPrimary.trim()
@@ -84,8 +91,7 @@ function applyWidgetData(data: Record<string, unknown> | null | undefined) {
   }
   if ("currentUserId" in data) {
     const raw = data.currentUserId;
-    const n =
-      typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
+    const n = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
     currentUserId.value = Number.isFinite(n) ? n : undefined;
   }
   if ("isNodeAdmin" in data) {
@@ -153,6 +159,7 @@ onBeforeMount(() => {
       :on-login="handleLoginFromChild"
       :is-logged-in="isLoggedIn"
       :page-background="pageBackground"
+      :page-color="pageColor"
       :text-primary="textPrimary"
       :text-secondary="textSecondary"
       :border-color="borderColor"
