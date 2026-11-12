@@ -278,6 +278,17 @@
   line-height: 18px;
 }
 
+.comment-root-load-more-tail--click {
+  text-align: left;
+  padding: 10px 10px 4px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.comment-root-load-more-tail .root-load-more-link {
+  display: inline-block;
+}
+
 .comment-root-load-more-tail .root-loading-more,
 .comment-root-load-more-tail .root-no-more {
   opacity: 0.75;

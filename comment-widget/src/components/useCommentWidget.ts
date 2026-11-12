@@ -271,8 +271,20 @@ export function useCommentWidget(props: CommentWidgetProps) {
    * （严格大于 10 会漏掉「刚好嵌 10 条但 replyCount 更大」的情况。）
    */
   const MAIN_LIST_EMBEDDED_REPLY_CAP = 10;
-  /** 一级评论分页 page 接口每页条数 */
+  /** 抽屉模式 / vertical 追加页：每页条数 */
   const ROOT_COMMENT_PAGE_LIMIT = 30;
+  /** 垂直嵌入（音乐详情等）：首屏一级评论条数，与 Figma 一致 */
+  const ROOT_COMMENT_VERTICAL_INITIAL_LIMIT = 50;
+
+  /** 垂直嵌入：首屏 50 条，之后按页追加；抽屉仍用滚动加载 + 每页 30 */
+  const verticalRootUsesClickLoad = computed(() => props.layout === "vertical");
+
+  function getRootCommentFetchLimit(skip: number): number {
+    if (props.layout === "vertical" && skip === 0) {
+      return ROOT_COMMENT_VERTICAL_INITIAL_LIMIT;
+    }
+    return ROOT_COMMENT_PAGE_LIMIT;
+  }
 
   function rootNeedsSubReplyPage(item: CommentThreadItem): boolean {
     const n = (item.replies ?? []).length;
@@ -381,7 +393,7 @@ export function useCommentWidget(props: CommentWidgetProps) {
       exhibitId,
       ...(props.itemId?.trim() ? { itemId: props.itemId.trim() } : {}),
       skip,
-      limit: ROOT_COMMENT_PAGE_LIMIT
+      limit: getRootCommentFetchLimit(skip)
     });
     const res = raw as unknown as FreelogApiBody<CommentListPageData>;
     if (!isFreelogApiSuccess(res)) {
@@ -446,9 +458,9 @@ export function useCommentWidget(props: CommentWidgetProps) {
     }
   }
 
-  /** 垂直列表：接近宿主视口底部时加载下一页（兼容 iframe + 父页面滚动） */
+  /** 垂直列表：接近宿主视口底部时加载下一页（仅用于未来 opt-in；默认改用手动「查看更多」避免撑高 iframe） */
   function checkVerticalRootLoadMore() {
-    if (props.layout !== "vertical") return;
+    if (props.layout !== "vertical" || verticalRootUsesClickLoad.value) return;
     const exhibitId = props.exhibitId?.trim();
     if (
       !exhibitId ||
@@ -1471,6 +1483,8 @@ export function useCommentWidget(props: CommentWidgetProps) {
     commentsLoading,
     commentsLoadingMore,
     commentsHasMore,
+    verticalRootUsesClickLoad,
+    loadMoreRootComments,
     publishSubmitting,
     blockSubmitting,
     deleteSubmitting,

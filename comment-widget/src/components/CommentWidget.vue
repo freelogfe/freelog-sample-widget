@@ -39,6 +39,8 @@ const {
   commentsLoading,
   commentsLoadingMore,
   commentsHasMore,
+  verticalRootUsesClickLoad,
+  loadMoreRootComments,
   publishSubmitting,
   blockSubmitting,
   deleteSubmitting,
@@ -484,9 +486,25 @@ void [
                 </div>
               </div>
             </div>
-            <div ref="rootLoadMoreSentinelRef" class="comment-root-load-more-tail">
+            <div
+              ref="rootLoadMoreSentinelRef"
+              class="comment-root-load-more-tail"
+              :class="{ 'comment-root-load-more-tail--click': verticalRootUsesClickLoad }"
+            >
               <span v-if="commentsLoadingMore" class="root-loading-more">加载中…</span>
-              <span v-else-if="!commentsHasMore && comments.length > 0" class="root-no-more"
+              <span
+                v-else-if="verticalRootUsesClickLoad && commentsHasMore && comments.length > 0"
+                class="view-link root-load-more-link"
+                role="button"
+                tabindex="0"
+                @click="loadMoreRootComments()"
+                @keydown.enter.prevent="loadMoreRootComments()"
+              >
+                点击查看更多评论
+              </span>
+              <span
+                v-else-if="!verticalRootUsesClickLoad && !commentsHasMore && comments.length > 0"
+                class="root-no-more"
                 >没有更多了</span
               >
             </div>
