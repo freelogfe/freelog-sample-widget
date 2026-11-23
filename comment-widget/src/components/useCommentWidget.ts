@@ -34,6 +34,8 @@ export interface CommentWidgetProps {
   /** 宿主页背景（如音乐主题 --bg-color），与评论区底色一致 */
   pageBackground?: string;
   pageColor?: string;
+  /** 品牌色按钮上的文字色；未传入时保留白色 */
+  primaryButtonText?: string;
   /** 第一层级文字色：标题、正文、主按钮文案等 */
   textPrimary?: string;
   /** 第二层级文字色：时间、次信息、弱化说明*/
@@ -87,8 +89,13 @@ export function useCommentWidget(props: CommentWidgetProps) {
   /** 宿主注入的页面背景与字色，覆盖 theme-light/theme-dark 内默认 token */
   const hostSurfaceStyle = computed(() => {
     const s: Record<string, string> = {};
-    if (props.pageBackground) s.background = props.pageBackground;
+    if (props.pageBackground) {
+      s.background = props.pageBackground;
+      s["--bg-color"] = props.pageBackground;
+      s["--bg-primary"] = props.pageBackground;
+    }
     if (props.pageColor) s["--page-color"] = props.pageColor;
+    if (props.primaryButtonText) s["--primary-button-text"] = props.primaryButtonText;
     if (props.textPrimary) s["--text-primary"] = props.textPrimary;
     if (props.textSecondary) s["--text-secondary"] = props.textSecondary;
     if (props.borderColor) s["--border-color"] = props.borderColor;

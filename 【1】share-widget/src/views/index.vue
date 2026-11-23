@@ -22,7 +22,7 @@
             </div>
           </div>
 
-          <div class="copy-btn" @click="share({ id: 'copy', name: '' })">复制链接</div>
+          <div class="copy-btn" :style="copyButtonStyle" @click="share({ id: 'copy', name: '' })">复制链接</div>
 
           <transition name="fade-in-out">
             <div class="qrcode-popup-wrapper" @click="qrcodeShow = false" v-if="qrcodeShow">
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, toRefs } from "@vue/reactivity";
+import { computed, reactive, toRefs } from "@vue/reactivity";
 import { shareBtns } from "@/api/data";
 import { showToast } from "@/utils/common";
 import QrcodeVue from "qrcode.vue";
@@ -59,7 +59,18 @@ export default {
       shareText: "",
       href: "",
       qrcodeShow: false,
-      qrcodeInfo: { name: "", url: "" }
+      qrcodeInfo: { name: "", url: "" },
+      copyButtonColors: {} as { background?: string; hover?: string; active?: string; text?: string }
+    });
+
+    const copyButtonStyle = computed(() => {
+      const colors = data.copyButtonColors || {};
+      return {
+        "--copy-button-background": colors.background || "#2784ff",
+        "--copy-button-hover": colors.hover || colors.background || "#529dff",
+        "--copy-button-active": colors.active || colors.background || "#2376e5",
+        "--copy-button-text": colors.text || "#fff"
+      };
     });
 
     const methods = {
@@ -129,9 +140,14 @@ export default {
     const initData = async () => {
       let params = {};
       widgetApi.addDataListener((props: any) => {
-        data.show = props.show;
+        if (typeof props.show === "boolean") data.show = props.show;
+        if (Object.prototype.hasOwnProperty.call(props, "copyButtonColors")) {
+          data.copyButtonColors = props.copyButtonColors || {};
+        }
       });
       const widgetConfig = widgetApi.getData();
+      data.show = Boolean(widgetConfig.show);
+      data.copyButtonColors = widgetConfig.copyButtonColors || {};
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
       const { exhibitId, itemId, collection } = widgetConfig.exhibit;
@@ -152,7 +168,7 @@ export default {
         }
 
         data.href = (freelogApp as any).getShareUrl(params, widgetConfig.routerType);
-      } else if (type === "博客") {
+      } else if (["博客", "音乐", "播客"].includes(type)) {
         if (itemId) {
           params = { exhibitId, itemId };
         } else {
@@ -171,6 +187,7 @@ export default {
 
     return {
       shareBtns,
+      copyButtonStyle,
       ...toRefs(data),
       ...methods
     };
@@ -282,8 +299,8 @@ export default {
         height: 38px;
         border-radius: 4px;
         font-size: 14px;
-        color: #fff;
-        background-color: #2784ff;
+        color: var(--copy-button-text, #fff);
+        background-color: var(--copy-button-background, #2784ff);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -291,11 +308,11 @@ export default {
         font-weight: bold;
 
         &:hover {
-          background-color: #529dff;
+          background-color: var(--copy-button-hover, #529dff);
         }
 
         &:active {
-          background-color: #2376e5;
+          background-color: var(--copy-button-active, #2376e5);
         }
       }
 

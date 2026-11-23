@@ -10,6 +10,7 @@ const onCloseRef = ref<(() => void) | undefined>();
 const onLoginRef = ref<(() => void) | undefined>();
 const pageBackground = ref<string | undefined>();
 const pageColor = ref<string | undefined>();
+const primaryButtonText = ref<string | undefined>();
 const textPrimary = ref<string | undefined>();
 const textSecondary = ref<string | undefined>();
 const borderColor = ref<string | undefined>();
@@ -70,6 +71,10 @@ function applyWidgetData(data: Record<string, unknown> | null | undefined) {
       typeof data.textPrimary === "string" && data.textPrimary.trim()
         ? data.textPrimary.trim()
         : undefined;
+  }
+  if ("primaryButtonText" in data) {
+    primaryButtonText.value = typeof data.primaryButtonText === "string" && data.primaryButtonText.trim()
+      ? data.primaryButtonText.trim() : undefined;
   }
   if ("textSecondary" in data) {
     textSecondary.value =
@@ -133,7 +138,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div id="comment-widget-container" :class="`theme-${theme}`">
+  <div id="comment-widget-container" :class="`theme-${theme}`" :style="{ backgroundColor: pageBackground }">
     <!-- <div class="controls">
       <button @click="toggleTheme">
         切换主题: {{ theme === "light" ? "☀️ 亮色" : "🌙 暗色" }}
@@ -160,6 +165,7 @@ onBeforeMount(() => {
       :is-logged-in="isLoggedIn"
       :page-background="pageBackground"
       :page-color="pageColor"
+      :primary-button-text="primaryButtonText"
       :text-primary="textPrimary"
       :text-secondary="textSecondary"
       :border-color="borderColor"
