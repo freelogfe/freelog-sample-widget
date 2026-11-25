@@ -22,7 +22,9 @@
             </div>
           </div>
 
-          <div class="copy-btn" :style="copyButtonStyle" @click="share({ id: 'copy', name: '' })">复制链接</div>
+          <div class="copy-btn" :style="copyButtonStyle" @click="share({ id: 'copy', name: '' })">
+            复制链接
+          </div>
 
           <transition name="fade-in-out">
             <div class="qrcode-popup-wrapper" @click="qrcodeShow = false" v-if="qrcodeShow">
@@ -60,7 +62,14 @@ export default {
       href: "",
       qrcodeShow: false,
       qrcodeInfo: { name: "", url: "" },
-      copyButtonColors: {} as { background?: string; hover?: string; active?: string; text?: string }
+      /** 宿主预计算的微信/QQ 扫码链；有值时插件不再自行拼 getCurrentUrl */
+      wechatQrUrl: "",
+      copyButtonColors: {} as {
+        background?: string;
+        hover?: string;
+        active?: string;
+        text?: string;
+      }
     });
 
     const copyButtonStyle = computed(() => {
@@ -72,6 +81,19 @@ export default {
         "--copy-button-text": colors.text || "#fff"
       };
     });
+
+    /**
+     * 微信/QQ 扫码链须经 getCurrentUrl(主题内路径) 才会带上子应用路由参数；
+     * 在 /home 打开分享时 getCurrentUrl 会把 theme 写成 /home，此处改回 /detail。
+     */
+    const buildThemeWechatQrUrl = (tempUrl: string) => {
+      if (!tempUrl) return "";
+      const changeUrl = (freelogApp as any).getCurrentUrl(tempUrl);
+      let qrUrl = (freelogApp as any).getWechatShareURL(changeUrl);
+      return qrUrl
+        .replace(/([?&]theme=)%2Fhome(?=&|$)/i, "$1%2Fdetail")
+        .replace(/([?&]theme=)\/home(?=&|$)/i, "$1/detail");
+    };
 
     const methods = {
       /** 分享 */
@@ -96,27 +118,33 @@ export default {
             `https://www.douban.com/share/service?url=${url}&title=${title}&image=${image}`
           );
         } else if (["qq", "wechat"].includes(item.id)) {
-          // 一些主题不支持常规分享，所以需要获取widgetConfig来重新配置分享链接
           const widgetConfig = widgetApi.getData();
-          const shareUrlGenerationException = widgetConfig?.shareUrlGenerationException;
+          const presetQrUrl =
+            (widgetConfig?.wechatQrUrl as string | undefined)?.trim() ||
+            data.wechatQrUrl?.trim() ||
+            "";
+          let qrUrl = presetQrUrl;
 
-          if (shareUrlGenerationException) {
-            let url = (freelogApp as any).getWechatShareURL();
+          const exception =
+            widgetConfig?.shareUrlGenerationException ??
+            widgetConfig?.exhibit?.shareUrlGenerationException;
+          const exhibit = widgetConfig?.exhibit ?? data.exhibit;
 
-            if (shareUrlGenerationException === "图库主题") {
-              const changeUrl = url.replace("home", "detail");
-              url = changeUrl;
-            }
-
-            data.qrcodeInfo = { name: item.name, url };
-            data.qrcodeShow = true;
-          } else {
-            const url = (freelogApp as any).getWechatShareURL();
-            console.log("qq wechat 分享", url);
-
-            data.qrcodeInfo = { name: item.name, url };
-            data.qrcodeShow = true;
+          if (!qrUrl && exception === "声屿主题") {
+            const { exhibitId, itemId } = exhibit;
+            const tempUrl = `/detail?id=${encodeURIComponent(exhibitId)}${
+              itemId ? `&itemId=${encodeURIComponent(itemId)}` : ""
+            }`;
+            qrUrl = buildThemeWechatQrUrl(tempUrl);
+          } else if (!qrUrl && exception === "图库主题") {
+            qrUrl = (freelogApp as any).getWechatShareURL().replace("home", "detail");
+          } else if (!qrUrl) {
+            qrUrl = (freelogApp as any).getWechatShareURL();
           }
+          console.log("qrl is", qrUrl);
+
+          data.qrcodeInfo = { name: item.name, url: qrUrl };
+          data.qrcodeShow = true;
         } else if (item.id === "copy") {
           // 复制链接
           const input: any = document.getElementById("href");
@@ -144,10 +172,15 @@ export default {
         if (Object.prototype.hasOwnProperty.call(props, "copyButtonColors")) {
           data.copyButtonColors = props.copyButtonColors || {};
         }
+        if (typeof props.wechatQrUrl === "string") {
+          data.wechatQrUrl = props.wechatQrUrl.trim();
+        }
       });
       const widgetConfig = widgetApi.getData();
       data.show = Boolean(widgetConfig.show);
       data.copyButtonColors = widgetConfig.copyButtonColors || {};
+      data.wechatQrUrl =
+        typeof widgetConfig.wechatQrUrl === "string" ? widgetConfig.wechatQrUrl.trim() : "";
       const type = widgetConfig.type || "展品";
       data.exhibit = widgetConfig.exhibit;
       const { exhibitId, itemId, collection } = widgetConfig.exhibit;
